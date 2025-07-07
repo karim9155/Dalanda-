@@ -1,0 +1,41 @@
+<!-- src/app/home/home.component.html -->
+
+<mat-toolbar color="primary">
+  <span>Dalanda Home</span>
+  <span class="spacer"></span>
+  <button mat-button color="accent" (click)="logout()">
+    Logout
+  </button>
+</mat-toolbar>
+
+<div class="home-content">
+  <h1>Your invoices</h1>
+
+  <ng-container *ngIf="invoices.length; else none">
+    <mat-list class="invoice-list">
+      <mat-list-item
+        *ngFor="let inv of invoices"
+        (click)="navigateToInvoiceForm(inv.id)"
+        class="pointer"
+      >
+        {{ inv.invoiceNumber }}
+        <span class="date">{{ inv.date | date }}</span>
+      </mat-list-item>
+    </mat-list>
+  </ng-container>
+
+  <ng-template #none>
+    <p>You haven't created any invoices yet.</p>
+  </ng-template>
+
+  <div class="action-buttons">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="navigateToInvoiceForm()"
+    >
+      <mat-icon>add</mat-icon>
+      Add Invoice
+    </button>
+  </div>
+</div>

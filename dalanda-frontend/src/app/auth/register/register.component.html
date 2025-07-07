@@ -1,0 +1,48 @@
+<div class="register-container">
+  <mat-card>
+    <h2>Register</h2>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+        <mat-error *ngIf="form.get('username')?.hasError('required')">
+          Username is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        <mat-error *ngIf="form.get('password')?.hasError('required')">
+          Password is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+          <mat-option value="USER">User</mat-option>
+          <mat-option value="ADMIN">Admin</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('roles')?.hasError('required')">
+          Pick at least one role
+        </mat-error>
+      </mat-form-field>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="register-button"
+        type="submit"
+        [disabled]="form.invalid">
+        Register
+      </button>
+    </form>
+
+    <div class="login-link">
+      <span>Already have an account?</span>
+      <a mat-button color="accent" routerLink="/login">Login</a>
+    </div>
+  </mat-card>
+</div>
