@@ -1,0 +1,42 @@
+/* src/app/home/home.component.css */
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.home-content {
+  /* center everything */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+}
+
+.invoice-list {
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 24px;
+}
+
+.invoice-list .mat-list-item {
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.invoice-list .date {
+  font-size: 0.85em;
+  color: rgba(0,0,0,0.6);
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.action-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -1,0 +1,52 @@
+/* center the card */
+.register-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #121212;
+}
+
+/* styling the mat-card */
+mat-card {
+  width: 360px;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #1e1e1e;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+mat-card h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 500;
+}
+
+/* form fields full width */
+mat-form-field {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+/* full-width submit button */
+.register-button {
+  width: 100%;
+  height: 48px;
+  font-size: 16px;
+}
+
+/* bottom login link */
+.login-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: #bbb;
+}
+
+.login-link a {
+  margin-left: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  color: #ff4081;
+}
