@@ -35,8 +35,6 @@ export interface Invoice {
   company: Company;
   client: Client;
   status?: 'pending' | 'paid' | 'overdue' | 'draft';
-  amount?: number;
-  clientName?: string;
 }
 // export interface Invoice {
 //   id: number;

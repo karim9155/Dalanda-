@@ -3,12 +3,15 @@ package com.example.dalanda.Controllers;
 import com.example.dalanda.Entities.Invoice;
 import com.example.dalanda.Services.InvoiceService;
 import com.example.dalanda.ServicesImp.PdfGeneratorFactory;
+import com.example.dalanda.dto.InvoiceDTO;
+import com.example.dalanda.dto.InvoiceMapper;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/invoices")
@@ -16,27 +19,36 @@ public class InvoiceController {
 
     private final InvoiceService invoiceService;
     private final PdfGeneratorFactory pdfFactory;
+    private final InvoiceMapper invoiceMapper;
 
     public InvoiceController(InvoiceService invoiceService,
-                             PdfGeneratorFactory pdfFactory) {
+                             PdfGeneratorFactory pdfFactory,
+                             InvoiceMapper invoiceMapper) {
         this.invoiceService = invoiceService;
         this.pdfFactory = pdfFactory;
+        this.invoiceMapper = invoiceMapper;
     }
 
     @GetMapping()
-    public List<Invoice> getAll() {
-        return invoiceService.getAllInvoices();
+    public List<InvoiceDTO> getAll() {
+        return invoiceService.getAllInvoices().stream()
+                .map(invoiceMapper::toInvoiceDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Invoice>> getByUser(@PathVariable UUID userId) {
+    public ResponseEntity<List<InvoiceDTO>> getByUser(@PathVariable UUID userId) {
         List<Invoice> list = invoiceService.findByUser(userId);
-        return ResponseEntity.ok(list);
+        List<InvoiceDTO> dtoList = list.stream()
+                .map(invoiceMapper::toInvoiceDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Invoice> getOne(@PathVariable Long id) {
+    public ResponseEntity<InvoiceDTO> getOne(@PathVariable Long id) {
         return invoiceService.getInvoice(id)
+                .map(invoiceMapper::toInvoiceDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }

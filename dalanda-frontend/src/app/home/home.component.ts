@@ -29,7 +29,10 @@ export class HomeComponent implements OnInit{
     this.userUuid = uuid;
 
     this.invoiceService.getByUser(uuid)
-      .subscribe(list => this.invoices = list);
+      .subscribe(list => {
+        console.log('Invoices received from backend:', list);
+        this.invoices = list;
+      });
   }
 
 
