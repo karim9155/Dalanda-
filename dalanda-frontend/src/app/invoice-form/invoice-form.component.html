@@ -216,6 +216,20 @@
                 Due date is required
               </mat-error>
             </mat-form-field>
+
+            <mat-form-field appearance="outline" class="modern-field">
+              <mat-label>Status</mat-label>
+              <mat-select formControlName="status">
+                <mat-option value="pending">Pending</mat-option>
+                <mat-option value="paid">Paid</mat-option>
+                <mat-option value="overdue">Overdue</mat-option>
+                <mat-option value="draft">Draft</mat-option>
+              </mat-select>
+              <mat-icon matPrefix>flag</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('status')?.hasError('required')">
+                Status is required
+              </mat-error>
+            </mat-form-field>
           </div>
         </mat-card-content>
       </mat-card>

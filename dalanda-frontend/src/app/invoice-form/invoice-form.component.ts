@@ -91,6 +91,7 @@ export class InvoiceFormComponent implements OnInit {
       invoiceNumber: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/)]],
       date: [new Date().toISOString().split('T')[0], Validators.required],
       dueDate: ['', Validators.required],
+      status: ['pending', Validators.required], // Added status field
 
       items: this.fb.array([this.createItem()]),
       taxOptions: this.fb.array([])
@@ -299,7 +300,7 @@ export class InvoiceFormComponent implements OnInit {
       invoiceNumber: invoice.invoiceNumber,
       date: invoice.date,
       dueDate: invoice.dueDate,
-
+      status: invoice.status || 'pending', // Populate status
     });
 
     // Populate items
@@ -392,7 +393,18 @@ export class InvoiceFormComponent implements OnInit {
     }
   }
 
-  private buildInvoicePayload(formValue: any, clientId: number, companyId: number): FullInvoicePayload {
+  private buildInvoicePayload(formValue: any, clientId: number, companyId: number): {
+    invoiceNumber: any;
+    date: any;
+    dueDate: any;
+    totalAmount: number;
+    client: { id: number };
+    company: { id: number };
+    createdBy: { id: string };
+    items: any;
+    taxOptions: string[];
+    status: 'pending' | 'paid' | 'overdue' | 'draft'
+  } {
     const totalAmount = this.calculateTotal();
     const createdBy = { id: localStorage.getItem('userUuid')! };
 
@@ -405,7 +417,8 @@ export class InvoiceFormComponent implements OnInit {
       company: { id: companyId },
       createdBy,
       items: formValue.items,
-      taxOptions: formValue.taxOptions as string[]
+      taxOptions: formValue.taxOptions as string[],
+      status: formValue.status // Add status to payload
     };
   }
 
@@ -451,8 +464,15 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   saveDraft(): void {
-    // Implement draft saving logic
-    this.showSnackBar('Draft saved successfully', 'success');
+    // Set status to 'draft'
+    this.invoiceForm.get('status')?.setValue('draft');
+
+    // Potentially bypass some validators if a draft doesn't need to be fully valid.
+    // For now, we'll assume a draft uses the same validation rules.
+    // If specific fields were optional for drafts, we'd adjust validators here before calling onSubmit.
+
+    this.showSnackBar('Attempting to save as draft...', 'info');
+    this.onSubmit(); // Call the main submit logic
   }
 
   previewInvoice(): void {

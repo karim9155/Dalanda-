@@ -4,6 +4,7 @@ import com.example.dalanda.Entities.Client;
 import com.example.dalanda.Entities.Company;
 import com.example.dalanda.Entities.TaxOption;
 import com.example.dalanda.Entities.User;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,22 +39,25 @@ public class Invoice {
     @Column(name = "total_amount", precision = 15, scale = 2, nullable = false)
     private BigDecimal totalAmount;
 
+    @Column(name = "status", nullable = true) // Assuming status can be initially null or set to a default
+    private String status;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
 
     @OneToMany(mappedBy = "invoice",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
+    @JsonManagedReference
     private List<InvoiceItem> items = new ArrayList<>();
 
     @ElementCollection(targetClass = TaxOption.class, fetch = FetchType.EAGER)

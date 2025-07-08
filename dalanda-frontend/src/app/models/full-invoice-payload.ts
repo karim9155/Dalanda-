@@ -13,4 +13,5 @@ export interface FullInvoicePayload {
     unitPrice: number;
   }>;
   taxOptions: string[];
+  status?: 'pending' | 'paid' | 'overdue' | 'draft';
 }
