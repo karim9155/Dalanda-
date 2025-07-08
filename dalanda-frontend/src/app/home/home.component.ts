@@ -7,6 +7,8 @@ import { MatSnackBar } from '@angular/material/snack-bar'; // Import MatSnackBar
 import { switchMap } from 'rxjs/operators';
 import {FullInvoicePayload} from '../models/full-invoice-payload';
 import {MatSelectChange} from '@angular/material/select'; // Import MatSelectChange
+import { MatDialog } from '@angular/material/dialog';
+import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +24,8 @@ export class HomeComponent implements OnInit{
     private tokenSvc: TokenService,
     private invoiceService: InvoiceService,
     private router: Router,
-    private snackBar: MatSnackBar // Inject MatSnackBar
+    private snackBar: MatSnackBar, // Inject MatSnackBar
+    private dialog: MatDialog // Inject MatDialog
   ) {}
   ngOnInit() {
     // read the real user id that you stored on login
@@ -131,6 +134,42 @@ export class HomeComponent implements OnInit{
         console.error('Error updating invoice status', err);
         this.snackBar.open('Failed to update status. Please try again.', 'Error', { duration: 3000 });
         // Optionally, revert the status change in the UI if it was optimistic
+      }
+    });
+  }
+
+  openPdfPreview(invoice: Invoice, event: MouseEvent): void {
+    event.stopPropagation(); // Prevent card click event from firing
+
+    if (!invoice || typeof invoice.id !== 'number') {
+      console.error('Invalid invoice or invoice ID for PDF preview.');
+      this.snackBar.open('Could not preview PDF: Invalid invoice data.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    this.invoiceService.downloadPdf(invoice.id).subscribe({
+      next: (blob) => {
+        if (blob.size === 0) {
+          this.snackBar.open('No PDF available or PDF is empty.', 'Close', { duration: 3000 });
+          return;
+        }
+        const pdfUrl = URL.createObjectURL(blob);
+        const dialogData: PdfPreviewDialogData = {
+          pdfUrl: pdfUrl,
+          pdfBlob: blob,
+          fileName: `${invoice.invoiceNumber || 'invoice'}.pdf`
+        };
+
+        this.dialog.open(PdfPreviewDialogComponent, {
+          data: dialogData,
+          width: '90vw',
+          height: '95vh',
+          panelClass: 'pdf-preview-dialog-panel' // Optional: for custom global styling
+        });
+      },
+      error: (err) => {
+        console.error('Error downloading PDF for preview:', err);
+        this.snackBar.open('Failed to load PDF for preview. Please try again.', 'Error', { duration: 3000 });
       }
     });
   }

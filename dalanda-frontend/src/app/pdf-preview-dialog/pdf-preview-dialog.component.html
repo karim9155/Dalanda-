@@ -1,0 +1,26 @@
+<div class="pdf-preview-dialog-container">
+  <mat-toolbar color="primary" class="dialog-toolbar">
+    <span class="dialog-title">PDF Preview</span>
+    <span class="toolbar-spacer"></span>
+    <button mat-icon-button (click)="onClose()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-toolbar>
+
+  <mat-dialog-content class="dialog-content">
+    <div class="iframe-container">
+      <iframe *ngIf="safePdfUrl" [src]="safePdfUrl" frameborder="0" width="100%" height="100%"></iframe>
+      <div *ngIf="!safePdfUrl" class="no-pdf-message">
+        <p>Could not load PDF preview.</p>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" class="dialog-actions">
+    <button mat-stroked-button (click)="onClose()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="downloadPdf()" [disabled]="!data.pdfBlob">
+      <mat-icon>download</mat-icon>
+      Download PDF
+    </button>
+  </mat-dialog-actions>
+</div>
