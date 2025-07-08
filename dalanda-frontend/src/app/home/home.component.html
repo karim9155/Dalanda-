@@ -52,19 +52,34 @@
             </mat-card-header>
             <mat-card-content>
               <div class="invoice-details">
-                <div class="detail-item" *ngIf="inv.clientName">
+                <div class="detail-item" *ngIf="inv.client && inv.client.companyName">
                   <mat-icon class="detail-icon">business</mat-icon>
-                  <span class="detail-text">{{ inv.clientName }}</span>
+                  <span class="detail-text">{{ inv.client.companyName }}</span>
                 </div>
-                <div class="detail-item" *ngIf="inv.amount">
+                <div class="detail-item" *ngIf="inv.totalAmount">
                   <mat-icon class="detail-icon">attach_money</mat-icon>
-                  <span class="detail-text">{{ inv.amount | currency }}</span>
+                  <span class="detail-text">{{ inv.totalAmount | currency }}</span>
                 </div>
                 <div class="detail-item">
                   <mat-icon class="detail-icon">schedule</mat-icon>
                   <span class="detail-text status" [class]="inv.status?.toLowerCase()">
                     {{ inv.status || 'Pending' }}
                   </span>
+                </div>
+                <!-- Quick Status Update Dropdown -->
+                <div class="detail-item quick-status-update">
+                  <mat-icon class="detail-icon">edit_attributes</mat-icon>
+                  <mat-form-field appearance="outline" class="status-select-field" (click)="$event.stopPropagation()">
+                    <mat-label>Change Status</mat-label>
+                    <mat-select
+                      [value]="inv.status"
+                      (selectionChange)="quickUpdateStatus(inv.id, $event.value, $event)">
+                      <mat-option value="pending">Pending</mat-option>
+                      <mat-option value="paid">Paid</mat-option>
+                      <mat-option value="overdue">Overdue</mat-option>
+                      <mat-option value="draft">Draft</mat-option>
+                    </mat-select>
+                  </mat-form-field>
                 </div>
               </div>
             </mat-card-content>

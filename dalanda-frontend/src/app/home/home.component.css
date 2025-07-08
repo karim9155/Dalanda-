@@ -243,6 +243,23 @@
   color: #c05621;
 }
 
+.detail-text.status.draft {
+  background: #e2e8f0; /* A light gray, for example */
+  color: #4a5568;    /* A darker gray text */
+}
+
+/* Styling for the quick status update dropdown */
+.quick-status-update .status-select-field {
+  width: 100%; /* Make it take available width in its flex container */
+  max-width: 200px; /* Or a fixed width if preferred */
+  margin-top: -10px; /* Adjust to align better if label is too high */
+}
+
+/* Optional: Adjust icon alignment or size if needed */
+.quick-status-update .detail-icon {
+  margin-top: 8px; /* Align icon with the form field */
+}
+
 .invoice-actions {
   padding: 12px 20px 20px;
   display: flex;

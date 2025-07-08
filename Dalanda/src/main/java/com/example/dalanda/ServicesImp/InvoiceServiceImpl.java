@@ -2,8 +2,8 @@
 package com.example.dalanda.ServicesImp;
 
 import com.example.dalanda.Entities.*;
-        import com.example.dalanda.Repositories.*;
-        import com.example.dalanda.Services.InvoiceService;
+import com.example.dalanda.Repositories.*;
+import com.example.dalanda.Services.InvoiceService;
 import com.example.dalanda.ServicesImp.TaxStrategyFactory;
 import com.example.dalanda.ServicesImp.PdfGeneratorFactory;
 import org.springframework.stereotype.Service;
@@ -73,6 +73,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         existing.setDate(updated.getDate());
         existing.setDueDate(updated.getDueDate());
         existing.setTaxOptions(updated.getTaxOptions());
+        existing.setStatus(updated.getStatus()); // Add this line to update status
 
         // 1) Clear out old items
         existing.getItems().clear();
