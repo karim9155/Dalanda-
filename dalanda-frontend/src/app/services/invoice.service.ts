@@ -40,7 +40,7 @@ export class InvoiceService {
     });
   }
 
-  updateInvoice(id: number, dto: InvoiceDto): Observable<Invoice> {
+  updateInvoice(id: number, dto: FullInvoicePayload): Observable<Invoice> {
     return this.http.put<Invoice>(`${this.api}/${id}`, dto, {
       headers: this.getAuthHeaders()
     });

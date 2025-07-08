@@ -15,18 +15,7 @@ import { TokenService }       from '../../services/token.service';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-
-    // Material modules needed for <mat-card>, <mat-form-field>, <mat-label>, <input matInput>, <button mat-raised-button>
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    RouterLink
-  ],
+  standalone: false,
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })

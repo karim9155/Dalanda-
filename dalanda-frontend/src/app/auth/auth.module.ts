@@ -27,8 +27,7 @@ import { RegisterComponent }    from './register/register.component';
     MatButtonModule,       // <-- <button mat-raised-button>
     MatSelectModule,       // <-- <mat-select> & <mat-option>
     AuthRoutingModule,
-    LoginComponent,
-    RegisterComponent
+
   ]
 })
 export class AuthModule {}

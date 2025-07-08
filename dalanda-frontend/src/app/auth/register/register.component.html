@@ -1,48 +1,87 @@
 <div class="register-container">
-  <mat-card>
-    <h2>Register</h2>
-    <form [formGroup]="form" (ngSubmit)="submit()">
-
-      <mat-form-field appearance="outline">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" />
-        <mat-error *ngIf="form.get('username')?.hasError('required')">
-          Username is required
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Password</mat-label>
-        <input matInput type="password" formControlName="password" />
-        <mat-error *ngIf="form.get('password')?.hasError('required')">
-          Password is required
-        </mat-error>
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
-        <mat-label>Roles</mat-label>
-        <mat-select formControlName="roles" multiple>
-          <mat-option value="USER">User</mat-option>
-          <mat-option value="ADMIN">Admin</mat-option>
-        </mat-select>
-        <mat-error *ngIf="form.get('roles')?.hasError('required')">
-          Pick at least one role
-        </mat-error>
-      </mat-form-field>
-
-      <button
-        mat-raised-button
-        color="primary"
-        class="register-button"
-        type="submit"
-        [disabled]="form.invalid">
-        Register
-      </button>
-    </form>
-
-    <div class="login-link">
-      <span>Already have an account?</span>
-      <a mat-button color="accent" routerLink="/login">Login</a>
+  <div class="register-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
     </div>
-  </mat-card>
+  </div>
+
+  <div class="register-card-wrapper">
+    <mat-card class="register-card">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <mat-icon class="logo-icon">receipt_long</mat-icon>
+        </div>
+        <h1 class="brand-title">Join Dalanda</h1>
+        <p class="brand-subtitle">Create your account and start managing invoices</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="register-form">
+        <div class="form-header">
+          <h2>Create Account</h2>
+          <p>Fill in your details to get started</p>
+        </div>
+
+        <div class="form-fields">
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" />
+            <mat-icon matPrefix>person</mat-icon>
+            <mat-error *ngIf="form.get('username')?.hasError('required')">
+              Username is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" />
+            <mat-icon matPrefix>lock</mat-icon>
+            <mat-error *ngIf="form.get('password')?.hasError('required')">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="modern-field">
+            <mat-label>User Roles</mat-label>
+            <mat-select formControlName="roles" multiple>
+              <mat-option value="USER">
+                <mat-icon>person</mat-icon>
+                User
+              </mat-option>
+              <mat-option value="ADMIN">
+                <mat-icon>admin_panel_settings</mat-icon>
+                Admin
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>assignment_ind</mat-icon>
+            <mat-error *ngIf="form.get('roles')?.hasError('required')">
+              Pick at least one role
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <button
+          mat-raised-button
+          color="primary"
+          class="register-button"
+          type="submit"
+          [disabled]="form.invalid">
+          <span *ngIf="!form.pending">Create Account</span>
+          <mat-spinner *ngIf="form.pending" diameter="20"></mat-spinner>
+        </button>
+
+        <div class="divider">
+          <span>or</span>
+        </div>
+
+        <div class="login-section">
+          <p class="login-text">Already have an account?</p>
+          <a mat-stroked-button color="accent" routerLink="/login" class="login-button">
+            Sign In
+          </a>
+        </div>
+      </form>
+    </mat-card>
+  </div>
 </div>

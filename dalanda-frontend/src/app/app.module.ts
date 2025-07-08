@@ -15,13 +15,26 @@ import {MatSlideToggle} from '@angular/material/slide-toggle';
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle, MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {CommonModule} from '@angular/common';
+import {MatCardModule} from '@angular/material/card';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatButtonModule} from '@angular/material/button';
+import {RouterLink} from '@angular/router';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatIcon }           from '@angular/material/icon';
+import {RegisterComponent} from './auth/register/register.component';
+import {LoginComponent} from './auth/login/login.component';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    InvoiceFormComponent
+    InvoiceFormComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +51,17 @@ import {MatCheckbox} from '@angular/material/checkbox';
     MatDatepicker,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatCheckbox
+    MatCheckbox,
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    RouterLink,
+    MatIcon,
+    MatProgressSpinner,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

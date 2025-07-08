@@ -1,206 +1,391 @@
-<mat-toolbar color="primary">
-  <span>Create New Invoice</span>
-  <span class="spacer"></span>
-</mat-toolbar>
-
-<div class="form-container">
-  <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
-
-    <!-- Client Section -->
-    <mat-card class="section-card">
-      <mat-card-header>
-        <mat-card-title>Client Information</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="toggle-container">
-          <mat-slide-toggle [checked]="useExistingClient" (change)="toggleClientMode()">
-            {{ useExistingClient ? 'Use Existing Client' : 'Create New Client' }}
-          </mat-slide-toggle>
+<div class="invoice-form-layout">
+  <mat-toolbar class="modern-toolbar" color="primary">
+    <div class="toolbar-content">
+      <div class="toolbar-left">
+        <button mat-icon-button class="back-button" (click)="cancel()">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="toolbar-info">
+          <span class="toolbar-title">Create New Invoice</span>
+          <span class="toolbar-subtitle">Fill in the details to generate your invoice</span>
         </div>
-
-        <div *ngIf="useExistingClient">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Select Client</mat-label>
-            <mat-select formControlName="clientId">
-              <mat-option *ngFor="let client of clients" [value]="client.id">
-                {{ client.companyName }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="invoiceForm.get('clientId')?.hasError('required')">
-              Please select a client
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div *ngIf="!useExistingClient">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Client Name</mat-label>
-            <input matInput formControlName="newClientName" placeholder="Enter client name">
-            <mat-error *ngIf="invoiceForm.get('newClientName')?.hasError('required')">
-              Client name is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Other Information</mat-label>
-            <textarea matInput formControlName="newClientOtherInfo" placeholder="Additional client information"></textarea>
-          </mat-form-field>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Company Section -->
-    <mat-card class="section-card">
-      <mat-card-header>
-        <mat-card-title>Company Information</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="toggle-container">
-          <mat-slide-toggle [checked]="useExistingCompany" (change)="toggleCompanyMode()">
-            {{ useExistingCompany ? 'Use Existing Company' : 'Create New Company' }}
-          </mat-slide-toggle>
-        </div>
-
-        <div *ngIf="useExistingCompany">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Select Company</mat-label>
-            <mat-select formControlName="companyId">
-              <mat-option *ngFor="let company of companies" [value]="company.id">
-                {{ company.companyName }}
-              </mat-option>
-            </mat-select>
-            <mat-error *ngIf="invoiceForm.get('companyId')?.hasError('required')">
-              Please select a company
-            </mat-error>
-          </mat-form-field>
-        </div>
-
-        <div *ngIf="!useExistingCompany">
-          <mat-form-field appearance="fill" class="full-width">
-            <mat-label>Company Name</mat-label>
-            <input matInput formControlName="newCompanyName" placeholder="Enter company name">
-            <mat-error *ngIf="invoiceForm.get('newCompanyName')?.hasError('required')">
-              Company name is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Invoice Details Section -->
-    <mat-card class="section-card">
-      <mat-card-header>
-        <mat-card-title>Invoice Details</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="form-row">
-          <mat-form-field appearance="fill">
-            <mat-label>Invoice Number</mat-label>
-            <input matInput formControlName="invoiceNumber" placeholder="INV-001">
-            <mat-error *ngIf="invoiceForm.get('invoiceNumber')?.hasError('required')">
-              Invoice number is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Date</mat-label>
-            <input matInput [matDatepicker]="datePicker" formControlName="date">
-            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
-            <mat-datepicker #datePicker></mat-datepicker>
-            <mat-error *ngIf="invoiceForm.get('date')?.hasError('required')">
-              Date is required
-            </mat-error>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill">
-            <mat-label>Due Date</mat-label>
-            <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate">
-            <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
-            <mat-datepicker #dueDatePicker></mat-datepicker>
-            <mat-error *ngIf="invoiceForm.get('dueDate')?.hasError('required')">
-              Due date is required
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Invoice Items Section -->
-    <mat-card class="section-card">
-      <mat-card-header>
-        <mat-card-title>Invoice Items</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div formArrayName="items">
-          <div *ngFor="let item of itemsArray.controls; let i = index" [formGroupName]="i" class="item-row">
-            <mat-form-field appearance="fill" class="item-description">
-              <mat-label>Description</mat-label>
-              <input matInput formControlName="description" placeholder="Item description">
-              <mat-error *ngIf="item.get('description')?.hasError('required')">
-                Description is required
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="item-qty">
-              <mat-label>Quantity</mat-label>
-              <input matInput type="number" formControlName="qty" min="1">
-              <mat-error *ngIf="item.get('qty')?.hasError('required')">
-                Quantity is required
-              </mat-error>
-              <mat-error *ngIf="item.get('qty')?.hasError('min')">
-                Quantity must be at least 1
-              </mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="item-price">
-              <mat-label>Unit Price</mat-label>
-              <input matInput type="number" formControlName="unitPrice" min="0">
-              <mat-error *ngIf="item.get('unitPrice')?.hasError('required')">
-                Unit price is required
-              </mat-error>
-              <mat-error *ngIf="item.get('unitPrice')?.hasError('min')">
-                Unit price must be at least 0
-              </mat-error>
-            </mat-form-field>
-
-            <button type="button" mat-icon-button color="warn" (click)="removeItem(i)"
-                    [disabled]="itemsArray.length <= 1">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-
-          <div class="add-item-container">
-            <button type="button" mat-stroked-button color="primary" (click)="addItem()">
-              <mat-icon>add</mat-icon> Add Item
-            </button>
-          </div>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Tax Options Section -->
-    <mat-card class="section-card">
-      <mat-card-header>
-        <mat-card-title>Tax Options</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <div class="tax-options-container">
-          <mat-checkbox *ngFor="let option of taxOptions"
-                       [checked]="isTaxSelected(option)"
-                       (change)="toggleTaxOption(option)">
-            {{ option }}
-          </mat-checkbox>
-        </div>
-      </mat-card-content>
-    </mat-card>
-
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button type="button" mat-stroked-button (click)="cancel()">Cancel</button>
-      <button type="submit" mat-raised-button color="primary" [disabled]="invoiceForm.invalid || isLoading">
-        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
-        <span *ngIf="!isLoading">Create Invoice</span>
-      </button>
+      </div>
+      <span class="spacer"></span>
+      <div class="toolbar-actions">
+        <button mat-stroked-button class="preview-button" type="button">
+          <mat-icon>preview</mat-icon>
+          Preview
+        </button>
+      </div>
     </div>
-  </form>
+  </mat-toolbar>
+
+  <div class="form-container">
+    <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="invoice-form">
+
+      <!-- Progress Indicator -->
+      <div class="progress-section">
+        <div class="progress-steps">
+          <div class="step active">
+            <div class="step-icon">
+              <mat-icon>business</mat-icon>
+            </div>
+            <span class="step-label">Client Info</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step active">
+            <div class="step-icon">
+              <mat-icon>receipt</mat-icon>
+            </div>
+            <span class="step-label">Invoice Details</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step active">
+            <div class="step-icon">
+              <mat-icon>list</mat-icon>
+            </div>
+            <span class="step-label">Items</span>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step">
+            <div class="step-icon">
+              <mat-icon>check</mat-icon>
+            </div>
+            <span class="step-label">Review</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Section -->
+      <mat-card class="section-card client-section">
+        <mat-card-header class="modern-card-header">
+          <div mat-card-avatar class="section-avatar client-avatar">
+            <mat-icon>business</mat-icon>
+          </div>
+          <mat-card-title class="section-title">Client Information</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">Choose an existing client or create a new one</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="modern-card-content">
+          <div class="toggle-section">
+            <mat-slide-toggle
+              class="modern-toggle"
+              [checked]="useExistingClient"
+              (change)="toggleClientMode()">
+              <span class="toggle-label">
+                <mat-icon>{{ useExistingClient ? 'person_search' : 'person_add' }}</mat-icon>
+                {{ useExistingClient ? 'Use Existing Client' : 'Create New Client' }}
+              </span>
+            </mat-slide-toggle>
+          </div>
+
+          <div class="form-content" [class.fade-in]="useExistingClient" *ngIf="useExistingClient">
+            <mat-form-field appearance="outline" class="modern-field full-width">
+              <mat-label>Select Client</mat-label>
+              <mat-select formControlName="clientId">
+                <mat-option *ngFor="let client of clients" [value]="client.id">
+                  <div class="select-option">
+                    <mat-icon>business</mat-icon>
+                    <span>{{ client.companyName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>search</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('clientId')?.hasError('required')">
+                Please select a client
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-content" [class.fade-in]="!useExistingClient" *ngIf="!useExistingClient">
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Client Name</mat-label>
+                <input matInput formControlName="newClientName" placeholder="Enter client name">
+                <mat-icon matPrefix>person</mat-icon>
+                <mat-error *ngIf="invoiceForm.get('newClientName')?.hasError('required')">
+                  Client name is required
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="modern-field full-width">
+              <mat-label>Additional Information</mat-label>
+              <textarea
+                matInput
+                formControlName="newClientOtherInfo"
+                placeholder="Address, contact details, notes..."
+                rows="3">
+              </textarea>
+              <mat-icon matPrefix>info</mat-icon>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Company Section -->
+      <mat-card class="section-card company-section">
+        <mat-card-header class="modern-card-header">
+          <div mat-card-avatar class="section-avatar company-avatar">
+            <mat-icon>domain</mat-icon>
+          </div>
+          <mat-card-title class="section-title">Company Information</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">Select your company details</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="modern-card-content">
+          <div class="toggle-section">
+            <mat-slide-toggle
+              class="modern-toggle"
+              [checked]="useExistingCompany"
+              (change)="toggleCompanyMode()">
+              <span class="toggle-label">
+                <mat-icon>{{ useExistingCompany ? 'domain_verification' : 'add_business' }}</mat-icon>
+                {{ useExistingCompany ? 'Use Existing Company' : 'Create New Company' }}
+              </span>
+            </mat-slide-toggle>
+          </div>
+
+          <div class="form-content" [class.fade-in]="useExistingCompany" *ngIf="useExistingCompany">
+            <mat-form-field appearance="outline" class="modern-field full-width">
+              <mat-label>Select Company</mat-label>
+              <mat-select formControlName="companyId">
+                <mat-option *ngFor="let company of companies" [value]="company.id">
+                  <div class="select-option">
+                    <mat-icon>domain</mat-icon>
+                    <span>{{ company.companyName }}</span>
+                  </div>
+                </mat-option>
+              </mat-select>
+              <mat-icon matPrefix>search</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('companyId')?.hasError('required')">
+                Please select a company
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-content" [class.fade-in]="!useExistingCompany" *ngIf="!useExistingCompany">
+            <mat-form-field appearance="outline" class="modern-field full-width">
+              <mat-label>Company Name</mat-label>
+              <input matInput formControlName="newCompanyName" placeholder="Enter company name">
+              <mat-icon matPrefix>domain</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('newCompanyName')?.hasError('required')">
+                Company name is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Invoice Details Section -->
+      <mat-card class="section-card details-section">
+        <mat-card-header class="modern-card-header">
+          <div mat-card-avatar class="section-avatar details-avatar">
+            <mat-icon>receipt</mat-icon>
+          </div>
+          <mat-card-title class="section-title">Invoice Details</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">Set invoice number and dates</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="modern-card-content">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="modern-field">
+              <mat-label>Invoice Number</mat-label>
+              <input matInput formControlName="invoiceNumber" placeholder="INV-001">
+              <mat-icon matPrefix>tag</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('invoiceNumber')?.hasError('required')">
+                Invoice number is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="modern-field">
+              <mat-label>Invoice Date</mat-label>
+              <input matInput [matDatepicker]="datePicker" formControlName="date">
+              <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+              <mat-datepicker #datePicker></mat-datepicker>
+              <mat-icon matPrefix>event</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('date')?.hasError('required')">
+                Date is required
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="modern-field">
+              <mat-label>Due Date</mat-label>
+              <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate">
+              <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+              <mat-datepicker #dueDatePicker></mat-datepicker>
+              <mat-icon matPrefix>schedule</mat-icon>
+              <mat-error *ngIf="invoiceForm.get('dueDate')?.hasError('required')">
+                Due date is required
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Invoice Items Section -->
+      <mat-card class="section-card items-section">
+        <mat-card-header class="modern-card-header">
+          <div mat-card-avatar class="section-avatar items-avatar">
+            <mat-icon>list</mat-icon>
+          </div>
+          <mat-card-title class="section-title">Invoice Items</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">Add products or services to your invoice</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="modern-card-content">
+          <div formArrayName="items" class="items-container">
+            <div class="items-header">
+              <div class="header-item description-header">Description</div>
+              <div class="header-item qty-header">Qty</div>
+              <div class="header-item price-header">Unit Price</div>
+              <div class="header-item total-header">Total</div>
+              <div class="header-item actions-header">Actions</div>
+            </div>
+
+            <div *ngFor="let item of itemsArray.controls; let i = index"
+                 [formGroupName]="i"
+                 class="item-row modern-item-row">
+
+              <mat-form-field appearance="outline" class="modern-field item-description">
+                <mat-label>Description</mat-label>
+                <input matInput formControlName="description" placeholder="Item description">
+                <mat-error *ngIf="item.get('description')?.hasError('required')">
+                  Description is required
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field item-qty">
+                <mat-label>Qty</mat-label>
+                <input matInput type="number" formControlName="qty" min="1">
+                <mat-error *ngIf="item.get('qty')?.hasError('required')">
+                  Required
+                </mat-error>
+                <mat-error *ngIf="item.get('qty')?.hasError('min')">
+                  Min 1
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field item-price">
+                <mat-label>Price</mat-label>
+                <input matInput type="number" formControlName="unitPrice" min="0" step="0.01">
+                <span matPrefix>$</span>
+                <mat-error *ngIf="item.get('unitPrice')?.hasError('required')">
+                  Required
+                </mat-error>
+                <mat-error *ngIf="item.get('unitPrice')?.hasError('min')">
+                  Min 0
+                </mat-error>
+              </mat-form-field>
+
+              <div class="item-total">
+                <span class="total-amount">
+                  {{ (item.get('qty')?.value || 0) * (item.get('unitPrice')?.value || 0) | currency }}
+                </span>
+              </div>
+
+              <div class="item-actions">
+                <button
+                  type="button"
+                  mat-icon-button
+                  color="warn"
+                  class="delete-button"
+                  (click)="removeItem(i)"
+                  [disabled]="itemsArray.length <= 1"
+                  [attr.aria-label]="'Remove item ' + (i + 1)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+
+            <div class="add-item-section">
+              <button
+                type="button"
+                mat-stroked-button
+                color="primary"
+                class="add-item-button"
+                (click)="addItem()">
+                <mat-icon>add</mat-icon>
+                Add Item
+              </button>
+            </div>
+
+            <!-- Invoice Summary -->
+            <div class="invoice-summary">
+              <div class="summary-row">
+                <span class="summary-label">Subtotal:</span>
+                <span class="summary-value">{{ calculateSubtotal() | currency }}</span>
+              </div>
+              <div class="summary-row">
+                <span class="summary-label">Tax:</span>
+                <span class="summary-value">{{ calculateTax() | currency }}</span>
+              </div>
+              <div class="summary-row total-row">
+                <span class="summary-label">Total:</span>
+                <span class="summary-value">{{ calculateTotal() | currency }}</span>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tax Options Section -->
+      <mat-card class="section-card tax-section">
+        <mat-card-header class="modern-card-header">
+          <div mat-card-avatar class="section-avatar tax-avatar">
+            <mat-icon>calculate</mat-icon>
+          </div>
+          <mat-card-title class="section-title">Tax Options</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">Select applicable taxes</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content class="modern-card-content">
+          <div class="tax-options-grid">
+            <mat-checkbox
+              *ngFor="let option of taxOptions"
+              class="modern-checkbox"
+              [checked]="isTaxSelected(option)"
+              (change)="toggleTaxOption(option)">
+              <div class="checkbox-content">
+                <span class="tax-name">{{ option }}</span>
+                <span class="tax-rate">{{ getTaxRate(option) }}%</span>
+              </div>
+            </mat-checkbox>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Form Actions -->
+      <div class="form-actions-section">
+        <div class="actions-container">
+          <div class="secondary-actions">
+            <button
+              type="button"
+              mat-stroked-button
+              class="cancel-button"
+              (click)="cancel()">
+              <mat-icon>close</mat-icon>
+              Cancel
+            </button>
+            <button
+              type="button"
+              mat-stroked-button
+              class="save-draft-button">
+              <mat-icon>save</mat-icon>
+              Save Draft
+            </button>
+          </div>
+
+          <div class="primary-actions">
+            <button
+              type="submit"
+              mat-raised-button
+              color="primary"
+              class="submit-button"
+              [disabled]="invoiceForm.invalid || isLoading">
+              <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+              <mat-icon *ngIf="!isLoading">check</mat-icon>
+              <span *ngIf="!isLoading">Create Invoice</span>
+              <span *ngIf="isLoading">Creating...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
