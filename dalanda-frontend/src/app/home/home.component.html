@@ -1,41 +1,107 @@
-<!-- src/app/home/home.component.html -->
+<div class="home-layout">
+  <mat-toolbar class="modern-toolbar" color="primary">
+    <div class="toolbar-content">
+      <div class="brand-section">
+        <mat-icon class="brand-icon">receipt_long</mat-icon>
+        <span class="brand-name">Dalanda</span>
+      </div>
+      <span class="spacer"></span>
+      <div class="user-section">
+        <button mat-icon-button class="profile-button">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <button mat-stroked-button class="logout-button" (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          Logout
+        </button>
+      </div>
+    </div>
+  </mat-toolbar>
 
-<mat-toolbar color="primary">
-  <span>Dalanda Home</span>
-  <span class="spacer"></span>
-  <button mat-button color="accent" (click)="logout()">
-    Logout
-  </button>
-</mat-toolbar>
+  <div class="home-content">
+    <div class="content-header">
+      <div class="header-info">
+        <h1 class="page-title">Your Invoices</h1>
+        <p class="page-subtitle">Manage and track all your invoices in one place</p>
+      </div>
+      <div class="header-actions">
+        <button
+          mat-raised-button
+          color="primary"
+          class="create-button"
+          (click)="navigateToInvoiceForm()">
+          <mat-icon>add</mat-icon>
+          Create Invoice
+        </button>
+      </div>
+    </div>
 
-<div class="home-content">
-  <h1>Your invoices</h1>
+    <div class="invoices-section">
+      <ng-container *ngIf="invoices.length; else emptyState">
+        <div class="invoices-grid">
+          <mat-card
+            *ngFor="let inv of invoices"
+            class="invoice-card"
+            (click)="navigateToInvoiceForm(inv.id)">
+            <mat-card-header>
+              <div mat-card-avatar class="invoice-avatar">
+                <mat-icon>description</mat-icon>
+              </div>
+              <mat-card-title class="invoice-number">{{ inv.invoiceNumber }}</mat-card-title>
+              <mat-card-subtitle class="invoice-date">{{ inv.date | date:'mediumDate' }}</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="invoice-details">
+                <div class="detail-item" *ngIf="inv.clientName">
+                  <mat-icon class="detail-icon">business</mat-icon>
+                  <span class="detail-text">{{ inv.clientName }}</span>
+                </div>
+                <div class="detail-item" *ngIf="inv.amount">
+                  <mat-icon class="detail-icon">attach_money</mat-icon>
+                  <span class="detail-text">{{ inv.amount | currency }}</span>
+                </div>
+                <div class="detail-item">
+                  <mat-icon class="detail-icon">schedule</mat-icon>
+                  <span class="detail-text status" [class]="inv.status?.toLowerCase()">
+                    {{ inv.status || 'Pending' }}
+                  </span>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions class="invoice-actions">
+              <button mat-icon-button color="primary" [attr.aria-label]="'Edit ' + inv.invoiceNumber">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="accent" [attr.aria-label]="'View ' + inv.invoiceNumber">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button [attr.aria-label]="'More options for ' + inv.invoiceNumber">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </ng-container>
 
-  <ng-container *ngIf="invoices.length; else none">
-    <mat-list class="invoice-list">
-      <mat-list-item
-        *ngFor="let inv of invoices"
-        (click)="navigateToInvoiceForm(inv.id)"
-        class="pointer"
-      >
-        {{ inv.invoiceNumber }}
-        <span class="date">{{ inv.date | date }}</span>
-      </mat-list-item>
-    </mat-list>
-  </ng-container>
-
-  <ng-template #none>
-    <p>You haven't created any invoices yet.</p>
-  </ng-template>
-
-  <div class="action-buttons">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="navigateToInvoiceForm()"
-    >
-      <mat-icon>add</mat-icon>
-      Add Invoice
-    </button>
+      <ng-template #emptyState>
+        <div class="empty-state">
+          <div class="empty-illustration">
+            <mat-icon class="empty-icon">receipt_long</mat-icon>
+          </div>
+          <h2 class="empty-title">No invoices yet</h2>
+          <p class="empty-description">
+            Start creating your first invoice to keep track of your business transactions
+          </p>
+          <button
+            mat-raised-button
+            color="primary"
+            class="empty-action-button"
+            (click)="navigateToInvoiceForm()">
+            <mat-icon>add</mat-icon>
+            Create Your First Invoice
+          </button>
+        </div>
+      </ng-template>
+    </div>
   </div>
 </div>

@@ -34,4 +34,25 @@ export interface Invoice {
   taxOptions: TaxOption[];
   company: Company;
   client: Client;
+  status?: 'pending' | 'paid' | 'overdue' | 'draft';
+  amount?: number;
+  clientName?: string;
 }
+// export interface Invoice {
+//   id: number;
+//   invoiceNumber: string;
+//   date: Date | string;
+//   dueDate?: Date | string;
+//   clientName?: string;
+//   clientId?: number;
+//   companyName?: string;
+//   companyId?: number;
+//   amount?: number;
+//   totalAmount?: number;
+//   status?: 'pending' | 'paid' | 'overdue' | 'draft';
+//   items?: InvoiceItem[];
+//   taxAmount?: number;
+//   subtotal?: number;
+//   createdAt?: Date | string;
+//   updatedAt?: Date | string;
+// }
