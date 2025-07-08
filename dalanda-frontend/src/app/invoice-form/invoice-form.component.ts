@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
 
 import { InvoiceService } from '../services/invoice.service';
 import { ClientService } from '../services/client.service';
@@ -59,7 +61,8 @@ export class InvoiceFormComponent implements OnInit {
     private snackBar: MatSnackBar,
     private invoiceService: InvoiceService,
     private clientService: ClientService,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private dialog: MatDialog // Inject MatDialog
   ) {
     this.invoiceForm = this.createForm();
   }
@@ -476,11 +479,42 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   previewInvoice(): void {
-    if (this.invoiceForm.valid) {
-      // Implement preview logic
-      this.showSnackBar('Preview functionality coming soon', 'info');
+    if (this.invoiceId !== null) {
+      // Existing invoice, proceed to fetch PDF
+      this.isLoading = true; // Optional: show a loading indicator
+      this.invoiceService.downloadPdf(this.invoiceId).subscribe({
+        next: (blob) => {
+          this.isLoading = false;
+          if (blob.size === 0) {
+            this.showSnackBar('No PDF available or PDF is empty.', 'error');
+            return;
+          }
+          const pdfUrl = URL.createObjectURL(blob);
+          const invoiceNumber = this.invoiceForm.get('invoiceNumber')?.value || 'invoice';
+          const dialogData: PdfPreviewDialogData = {
+            pdfUrl: pdfUrl,
+            pdfBlob: blob,
+            fileName: `${invoiceNumber}.pdf`
+          };
+
+          this.dialog.open(PdfPreviewDialogComponent, {
+            data: dialogData,
+            width: '90vw', // Or your preferred size, consistent with home page
+            height: '95vh',
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            panelClass: ['pdf-preview-dialog-panel', 'full-screen-dialog'] // Use classes from previous step if desired
+          });
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Error downloading PDF for preview:', err);
+          this.showSnackBar('Failed to load PDF for preview. Please try again.', 'error');
+        }
+      });
     } else {
-      this.showSnackBar('Please complete the form to preview', 'error');
+      // New invoice, not saved yet
+      this.showSnackBar('Please save the invoice first to enable preview.', 'info');
     }
   }
 
