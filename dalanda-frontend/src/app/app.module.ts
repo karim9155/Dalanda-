@@ -26,6 +26,8 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatIcon }           from '@angular/material/icon';
 import {RegisterComponent} from './auth/register/register.component';
 import {LoginComponent} from './auth/login/login.component';
+import { PdfPreviewDialogComponent } from './pdf-preview-dialog/pdf-preview-dialog.component';
+import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
 
 
 @NgModule({
@@ -34,7 +36,8 @@ import {LoginComponent} from './auth/login/login.component';
     HomeComponent,
     InvoiceFormComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    PdfPreviewDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -62,6 +65,8 @@ import {LoginComponent} from './auth/login/login.component';
     RouterLink,
     MatIcon,
     MatProgressSpinner,
+    MatDialogContent,
+    MatDialogActions,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

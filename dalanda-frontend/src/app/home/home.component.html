@@ -87,8 +87,8 @@
               <button mat-icon-button color="primary" [attr.aria-label]="'Edit ' + inv.invoiceNumber">
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button color="accent" [attr.aria-label]="'View ' + inv.invoiceNumber">
-                <mat-icon>visibility</mat-icon>
+              <button mat-icon-button color="accent" (click)="openPdfPreview(inv, $event)" [attr.aria-label]="'Preview PDF for ' + inv.invoiceNumber">
+                <mat-icon>picture_as_pdf</mat-icon>
               </button>
               <button mat-icon-button [attr.aria-label]="'More options for ' + inv.invoiceNumber">
                 <mat-icon>more_vert</mat-icon>

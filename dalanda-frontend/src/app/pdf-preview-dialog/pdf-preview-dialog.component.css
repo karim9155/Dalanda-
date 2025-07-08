@@ -1,0 +1,41 @@
+.pdf-preview-dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Fill the dialog panel */
+  width: 100%;  /* Fill the dialog panel */
+  overflow: hidden; /* Crucial: prevent scrollbars on this container */
+  padding: 0; /* Remove padding if any */
+}
+
+.dialog-toolbar {
+  flex-shrink: 0; /* Toolbar should not shrink */
+  /* You might want a slightly less tall toolbar if going full screen */
+  /* min-height: 56px; */
+  /* height: 56px; */
+}
+
+mat-dialog-content.dialog-content {
+  flex-grow: 1; /* Content area takes all remaining space */
+  padding: 0;   /* Remove padding */
+  overflow: hidden; /* Prevent scrollbars on the content area itself */
+  display: flex;
+  flex-direction: column;
+}
+
+.iframe-container {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* The iframe itself will handle PDF scrolling */
+}
+
+.iframe-container iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+mat-dialog-actions.dialog-actions {
+  flex-shrink: 0;
+  /* Maybe a bit more padding or different styling for full screen */
+}
