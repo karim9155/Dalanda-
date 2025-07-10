@@ -28,6 +28,7 @@ import {RegisterComponent} from './auth/register/register.component';
 import {LoginComponent} from './auth/login/login.component';
 import { PdfPreviewDialogComponent } from './pdf-preview-dialog/pdf-preview-dialog.component';
 import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
+import {MaterialFileInputModule} from 'ngx-custom-material-file-input';
 
 
 @NgModule({
@@ -67,6 +68,8 @@ import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
     MatProgressSpinner,
     MatDialogContent,
     MatDialogActions,
+    MaterialFileInputModule,
+
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

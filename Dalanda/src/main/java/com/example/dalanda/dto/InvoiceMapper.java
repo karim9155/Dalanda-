@@ -62,7 +62,8 @@ public class InvoiceMapper {
                 toUserDTO(invoice.getCreatedBy()),
                 invoice.getItems() != null ? invoice.getItems().stream().map(this::toInvoiceItemDTO).collect(Collectors.toList()) : Collections.emptyList(),
                 invoice.getTaxOptions(), // Assuming TaxOption enum can be used directly
-                invoice.getStatus()
+                invoice.getStatus(),
+                invoice.getDeclaration()
         );
     }
 }

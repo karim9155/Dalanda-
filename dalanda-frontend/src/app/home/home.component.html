@@ -81,6 +81,16 @@
                     </mat-select>
                   </mat-form-field>
                 </div>
+                <div class="detail-item declaration-toggle-container">
+                  <mat-icon class="detail-icon">toggle_on</mat-icon>
+                  <mat-slide-toggle
+                    [checked]="inv.declaration === 1"
+                    (change)="toggleDeclaration(inv, $event)"
+                    (click)="$event.stopPropagation()"
+                    class="declaration-toggle">
+                    {{ inv.declaration === 1 ? 'Declared' : 'Not Declared' }}
+                  </mat-slide-toggle>
+                </div>
               </div>
             </mat-card-content>
             <mat-card-actions class="invoice-actions">

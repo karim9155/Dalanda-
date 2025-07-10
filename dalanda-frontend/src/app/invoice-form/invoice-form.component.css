@@ -663,3 +663,53 @@
     width: 100%;
   }
 }
+
+/* Styles for file inputs and previews */
+.file-input-field {
+  margin-bottom: 16px; /* Or use gap in .form-row */
+}
+
+.file-preview-row {
+  display: flex;
+  gap: 20px; /* Spacing between logo and stamp previews */
+  margin-top: 8px;
+  margin-bottom: 16px;
+  align-items: flex-start; /* Align items to the top */
+}
+
+.file-preview-container {
+  display: flex;
+  flex-direction: column; /* Stack label and image */
+  align-items: flex-start; /* Align label to the start */
+}
+
+.preview-label {
+  font-size: 0.8em;
+  color: #555;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.file-preview-image {
+  max-width: 150px; /* Max width for the preview */
+  max-height: 100px; /* Max height for the preview */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  object-fit: contain; /* Scale image nicely within bounds */
+  background-color: #f9f9f9; /* Light background for transparent images */
+}
+
+/* Ensure ngx-mat-file-input looks fine within the form field */
+.file-input-field ::ng-deep .mat-mdc-form-field-flex {
+  align-items: center; /* Vertically align icon, text, and button in file input */
+}
+
+.file-input-field ::ng-deep ngx-mat-file-input button.mdc-button {
+  margin-left: 8px; /* Space out the "Browse" button if needed */
+}
+
+.file-input-field ::ng-deep .mat-mdc-form-field-icon-suffix button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

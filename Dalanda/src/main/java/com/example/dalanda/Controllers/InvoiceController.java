@@ -77,6 +77,26 @@ public class InvoiceController {
         invoiceService.deleteInvoice(id);
     }
 
+    @PutMapping("/{id}/toggle-declaration")
+    public ResponseEntity<InvoiceDTO> toggleDeclarationStatus(@PathVariable Long id) {
+        try {
+            Invoice invoice = invoiceService.getInvoice(id)
+                    .orElseThrow(() -> new IllegalArgumentException("Invoice not found with id: " + id));
+
+            Integer currentDeclaration = invoice.getDeclaration();
+            // Default to 0 if null, though it should be initialized
+            invoice.setDeclaration(currentDeclaration == null || currentDeclaration == 0 ? 1 : 0);
+
+            Invoice updatedInvoice = invoiceService.createInvoice(invoice); // Assuming saveInvoice persists the changes
+            return ResponseEntity.ok(invoiceMapper.toInvoiceDTO(updatedInvoice));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            // Log the exception e
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/{id}/pdf")
     public ResponseEntity<ByteArrayResource> downloadPdf(@PathVariable Long id,
                                                          @RequestParam(defaultValue = "iText") String generator) {

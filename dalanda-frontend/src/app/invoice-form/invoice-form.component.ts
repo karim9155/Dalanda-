@@ -18,7 +18,7 @@ import { CompanyService } from '../services/company.service';
 import { Client, Company, Invoice } from '../models/invoice';
 import { TaxOption } from '../models/tax-option';
 import { FullInvoicePayload } from '../models/full-invoice-payload';
-import { of, forkJoin, Observable } from 'rxjs';
+import { of, forkJoin, Observable, from } from 'rxjs';
 import { switchMap, map, catchError, finalize } from 'rxjs/operators';
 
 @Component({
@@ -53,6 +53,12 @@ export class InvoiceFormComponent implements OnInit {
 
   // Error handling
   error: string | null = null;
+
+  // File handling for company logo and stamp
+  selectedLogoFile: File | null = null;
+  logoPreviewUrl: string | ArrayBuffer | null = null;
+  selectedStampFile: File | null = null;
+  stampPreviewUrl: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -387,12 +393,37 @@ export class InvoiceFormComponent implements OnInit {
 
   private prepareCompanyObservable(formValue: any): Observable<{ id: number }> {
     if (this.useExistingCompany) {
-      return of({ id: formValue.companyId });
+      return of({ id: formValue.companyId, companyName: '', logo: undefined, stampSignature: undefined }); // Added dummy fields to satisfy type, actual data not used
     } else {
-      return this.companyService.create({
-        id: formValue.companyId,
+      // Prepare company data
+      const companyData: Partial<Company> = { // Use Partial<Company> for flexibility
         companyName: formValue.newCompanyName
-      }).pipe(map(c => ({ id: c.id })));
+      };
+
+      // Observables for file conversions
+      const logoObs = this.selectedLogoFile
+        ? from(this.getFileAsBase64(this.selectedLogoFile))
+        : of(null);
+      const stampObs = this.selectedStampFile
+        ? from(this.getFileAsBase64(this.selectedStampFile))
+        : of(null);
+
+      return forkJoin([logoObs, stampObs]).pipe(
+        switchMap(([logoBase64, stampBase64]) => {
+          if (logoBase64) {
+            companyData.logo = logoBase64;
+          }
+          if (stampBase64) {
+            companyData.stampSignature = stampBase64;
+          }
+          // The companyService.create method expects a Company-like object.
+          // We provide id as undefined or null for new company.
+          // The actual Company interface in models/invoice.ts includes `id: number`.
+          // We might need to adjust the type here or in the service if `id` is strictly required.
+          // For now, assuming companyService.create can handle `id` being absent or null for new entities.
+          return this.companyService.create(companyData as Company).pipe(map(c => ({ id: c.id, companyName: c.companyName, logo: c.logo, stampSignature: c.stampSignature })));
+        })
+      );
     }
   }
 
@@ -552,5 +583,69 @@ export class InvoiceFormComponent implements OnInit {
 
   trackByTaxOption(index: number, option: string): string {
     return option;
+  }
+
+  // File selection handlers
+  onLogoFileSelected(event: Event): void {
+    const element = event.currentTarget as HTMLInputElement;
+    const fileList: FileList | null = element.files;
+    if (fileList && fileList[0]) {
+      this.selectedLogoFile = fileList[0];
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = e => this.logoPreviewUrl = reader.result;
+      reader.readAsDataURL(this.selectedLogoFile);
+    } else {
+      this.selectedLogoFile = null;
+      this.logoPreviewUrl = null;
+    }
+  }
+
+  clearLogoFile(event: MouseEvent): void {
+    event.stopPropagation(); // Prevent default behavior if any
+    this.selectedLogoFile = null;
+    this.logoPreviewUrl = null;
+    // If using ngx-mat-file-input, you might need to reset its value as well
+    // This depends on the specific implementation of ngx-mat-file-input
+    // For a standard input, you might do:
+    // const logoInput = document.getElementById('logo-input-id') as HTMLInputElement;
+    // if (logoInput) logoInput.value = '';
+  }
+
+  onStampFileSelected(event: Event): void {
+    const element = event.currentTarget as HTMLInputElement;
+    const fileList: FileList | null = element.files;
+    if (fileList && fileList[0]) {
+      this.selectedStampFile = fileList[0];
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = e => this.stampPreviewUrl = reader.result;
+      reader.readAsDataURL(this.selectedStampFile);
+    } else {
+      this.selectedStampFile = null;
+      this.stampPreviewUrl = null;
+    }
+  }
+
+  clearStampFile(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedStampFile = null;
+    this.stampPreviewUrl = null;
+    // Similar to clearLogoFile, might need to reset input element if not using a component that handles it
+  }
+
+  // Helper to convert file to Base64
+  private async getFileAsBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // result is DataURL: "data:image/png;base64,iVBORw0KGg..."
+        // We need to strip the "data:image/png;base64," part
+        const base64String = (reader.result as string).split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 }

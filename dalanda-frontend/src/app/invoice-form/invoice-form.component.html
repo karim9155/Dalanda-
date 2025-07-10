@@ -171,6 +171,37 @@
                 Company name is required
               </mat-error>
             </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field file-input-field">
+                <mat-label>Company Logo</mat-label>
+                <ngx-mat-file-input (change)="onLogoFileSelected($event)" accept="image/*"></ngx-mat-file-input>
+                <mat-icon matPrefix>image</mat-icon>
+                <button mat-icon-button matSuffix *ngIf="selectedLogoFile" (click)="clearLogoFile($event)">
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field file-input-field">
+                <mat-label>Stamp Signature</mat-label>
+                <ngx-mat-file-input (change)="onStampFileSelected($event)" accept="image/*"></ngx-mat-file-input>
+                <mat-icon matPrefix>badge</mat-icon>
+                <button mat-icon-button matSuffix *ngIf="selectedStampFile" (click)="clearStampFile($event)">
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div class="file-preview-row">
+              <div *ngIf="logoPreviewUrl" class="file-preview-container">
+                <span class="preview-label">Logo Preview:</span>
+                <img [src]="logoPreviewUrl" alt="Logo Preview" class="file-preview-image">
+              </div>
+              <div *ngIf="stampPreviewUrl" class="file-preview-container">
+                <span class="preview-label">Stamp Preview:</span>
+                <img [src]="stampPreviewUrl" alt="Stamp Preview" class="file-preview-image">
+              </div>
+            </div>
+
           </div>
         </mat-card-content>
       </mat-card>

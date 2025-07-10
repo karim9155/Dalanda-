@@ -9,6 +9,7 @@ import {FullInvoicePayload} from '../models/full-invoice-payload';
 import {MatSelectChange} from '@angular/material/select'; // Import MatSelectChange
 import { MatDialog } from '@angular/material/dialog';
 import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-home',
@@ -134,6 +135,41 @@ export class HomeComponent implements OnInit{
         console.error('Error updating invoice status', err);
         this.snackBar.open('Failed to update status. Please try again.', 'Error', { duration: 3000 });
         // Optionally, revert the status change in the UI if it was optimistic
+      }
+    });
+  }
+
+  toggleDeclaration(invoice: Invoice, event: MatSlideToggleChange): void {
+    // The slide toggle has already visually changed its state due to user interaction.
+    // `event.checked` reflects the new state (true if toggled on, false if off).
+    const intendedDeclarationStatus = event.checked ? 1 : 0;
+
+    // Temporarily update local data for optimistic UI update.
+    // This is optional but provides better UX.
+    const originalDeclaration = invoice.declaration;
+    invoice.declaration = intendedDeclarationStatus;
+
+    this.invoiceService.toggleInvoiceDeclaration(invoice.id).subscribe({
+      next: (updatedInvoice) => {
+        // Backend confirmed the change, update local data with the authoritative response.
+        const index = this.invoices.findIndex(inv => inv.id === updatedInvoice.id);
+        if (index !== -1) {
+          this.invoices[index] = updatedInvoice;
+          // Ensure the view updates if OnPush change detection is used
+          this.invoices = [...this.invoices];
+        }
+        this.snackBar.open(`Invoice ${updatedInvoice.invoiceNumber} marked as ${updatedInvoice.declaration === 1 ? 'Declared' : 'Not Declared'}.`, 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error toggling invoice declaration', err);
+        // Revert the optimistic update on error.
+        const index = this.invoices.findIndex(inv => inv.id === invoice.id);
+        if (index !== -1) {
+          this.invoices[index].declaration = originalDeclaration; // Revert to original state
+          // Force view update
+          this.invoices = [...this.invoices];
+        }
+        this.snackBar.open('Failed to update declaration status. Please try again.', 'Error', { duration: 3000 });
       }
     });
   }

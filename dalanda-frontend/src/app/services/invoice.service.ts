@@ -65,4 +65,12 @@ export class InvoiceService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+  toggleInvoiceDeclaration(id: number): Observable<Invoice> {
+    return this.http.put<Invoice>(
+      `${this.api}/${id}/toggle-declaration`,
+      {}, // Empty body for the PUT request, as the backend handles the toggle logic
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }

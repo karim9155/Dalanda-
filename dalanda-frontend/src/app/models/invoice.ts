@@ -35,6 +35,7 @@ export interface Invoice {
   company: Company;
   client: Client;
   status?: 'pending' | 'paid' | 'overdue' | 'draft';
+  declaration?: number; // 0 for not declared, 1 for declared
   // amount?: number;
   // clientName?: string;
 }
