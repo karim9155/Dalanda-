@@ -344,6 +344,14 @@ export class InvoiceFormComponent implements OnInit {
     this.error = null;
 
     const fv = this.invoiceForm.value;
+    console.log('Invoice Form onSubmit triggered.');
+    console.log('Form Value:', fv);
+    console.log('Is Edit Mode:', this.isEditMode);
+    console.log('Invoice ID for edit:', this.invoiceId);
+    console.log('useExistingClient:', this.useExistingClient);
+    console.log('useExistingCompany:', this.useExistingCompany); // Very important
+    console.log('Selected Logo File:', this.selectedLogoFile);
+    console.log('Selected Stamp File:', this.selectedStampFile);
 
     // Prepare client and company observables
     const client$ = this.prepareClientObservable(fv);
@@ -392,9 +400,17 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   private prepareCompanyObservable(formValue: any): Observable<{ id: number }> {
+    console.log('[prepareCompanyObservable] Called. useExistingCompany:', this.useExistingCompany);
+    console.log('[prepareCompanyObservable] formValue.companyId:', formValue.companyId);
+    console.log('[prepareCompanyObservable] formValue.newCompanyName:', formValue.newCompanyName);
+
     if (this.useExistingCompany) {
+      console.log('[prepareCompanyObservable] Preparing EXISTING company with ID:', formValue.companyId);
       return of({ id: formValue.companyId, companyName: '', logo: undefined, stampSignature: undefined }); // Added dummy fields to satisfy type, actual data not used
     } else {
+      console.log('[prepareCompanyObservable] Preparing NEW company.');
+      console.log('[prepareCompanyObservable] Selected Logo File (for new company):', this.selectedLogoFile);
+      console.log('[prepareCompanyObservable] Selected Stamp File (for new company):', this.selectedStampFile);
       // Prepare company data
       const companyData: Partial<Company> = { // Use Partial<Company> for flexibility
         companyName: formValue.newCompanyName
@@ -416,6 +432,7 @@ export class InvoiceFormComponent implements OnInit {
           if (stampBase64) {
             companyData.stampSignature = stampBase64;
           }
+          console.log('[prepareCompanyObservable] Company data for companyService.create:', companyData);
           // The companyService.create method expects a Company-like object.
           // We provide id as undefined or null for new company.
           // The actual Company interface in models/invoice.ts includes `id: number`.
@@ -439,10 +456,11 @@ export class InvoiceFormComponent implements OnInit {
     taxOptions: string[];
     status: 'pending' | 'paid' | 'overdue' | 'draft'
   } {
+    console.log('[buildInvoicePayload] Called with clientId:', clientId, 'companyId:', companyId);
     const totalAmount = this.calculateTotal();
     const createdBy = { id: localStorage.getItem('userUuid')! };
 
-    return {
+    const payload = {
       invoiceNumber: formValue.invoiceNumber,
       date: formValue.date,
       dueDate: formValue.dueDate,
@@ -454,6 +472,8 @@ export class InvoiceFormComponent implements OnInit {
       taxOptions: formValue.taxOptions as string[],
       status: formValue.status // Add status to payload
     };
+    console.log('[buildInvoicePayload] Final payload being built:', payload);
+    return payload;
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
@@ -586,11 +606,29 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   // File selection handlers
-  onLogoFileSelected(event: Event): void {
-    const element = event.currentTarget as HTMLInputElement;
-    const fileList: FileList | null = element.files;
-    if (fileList && fileList[0]) {
-      this.selectedLogoFile = fileList[0];
+  onLogoFileSelected(event: any): void { // Changed type to any to inspect event structure
+    console.log('[onLogoFileSelected] Event received:', event);
+    // ngx-mat-file-input might emit the File directly, or a FileList, or an object containing the file.
+    // Common pattern: if it's a single file component, event might be the File itself.
+    // Or if it behaves like a standard input, it might be event.target.files.
+    // Let's try to determine the structure.
+
+    let file: File | null = null;
+
+    if (event instanceof File) { // If the event itself is a File object
+      file = event;
+    } else if (event && event.target && event.target.files && event.target.files.length > 0) { // Standard HTML input behavior
+      file = event.target.files[0];
+    } else if (event && event.files && event.files.length > 0) { // Some custom components might use event.files
+      file = event.files[0];
+    } else if (Array.isArray(event) && event.length > 0 && event[0] instanceof File) { // If it emits an array of files
+      file = event[0];
+    }
+
+
+    if (file) {
+      this.selectedLogoFile = file;
+      console.log('[onLogoFileSelected] Selected logo file:', this.selectedLogoFile);
       // Generate preview
       const reader = new FileReader();
       reader.onload = e => this.logoPreviewUrl = reader.result;
@@ -598,6 +636,7 @@ export class InvoiceFormComponent implements OnInit {
     } else {
       this.selectedLogoFile = null;
       this.logoPreviewUrl = null;
+      console.log('[onLogoFileSelected] No valid file found in event.');
     }
   }
 
@@ -605,18 +644,30 @@ export class InvoiceFormComponent implements OnInit {
     event.stopPropagation(); // Prevent default behavior if any
     this.selectedLogoFile = null;
     this.logoPreviewUrl = null;
-    // If using ngx-mat-file-input, you might need to reset its value as well
-    // This depends on the specific implementation of ngx-mat-file-input
-    // For a standard input, you might do:
-    // const logoInput = document.getElementById('logo-input-id') as HTMLInputElement;
-    // if (logoInput) logoInput.value = '';
+    // For ngx-mat-file-input, you might need to reset the form control value if it's part of a reactive form
+    // Example: this.invoiceForm.get('yourLogoFormControlName')?.setValue(null);
+    // Or if the component has a clear() method, you might need a ViewChild to call it.
+    // For now, this just clears our internal state.
+    console.log('[clearLogoFile] Logo cleared.');
   }
 
-  onStampFileSelected(event: Event): void {
-    const element = event.currentTarget as HTMLInputElement;
-    const fileList: FileList | null = element.files;
-    if (fileList && fileList[0]) {
-      this.selectedStampFile = fileList[0];
+  onStampFileSelected(event: any): void { // Changed type to any
+    console.log('[onStampFileSelected] Event received:', event);
+    let file: File | null = null;
+
+    if (event instanceof File) {
+      file = event;
+    } else if (event && event.target && event.target.files && event.target.files.length > 0) {
+      file = event.target.files[0];
+    } else if (event && event.files && event.files.length > 0) {
+      file = event.files[0];
+    } else if (Array.isArray(event) && event.length > 0 && event[0] instanceof File) {
+      file = event[0];
+    }
+
+    if (file) {
+      this.selectedStampFile = file;
+      console.log('[onStampFileSelected] Selected stamp file:', this.selectedStampFile);
       // Generate preview
       const reader = new FileReader();
       reader.onload = e => this.stampPreviewUrl = reader.result;
@@ -624,6 +675,7 @@ export class InvoiceFormComponent implements OnInit {
     } else {
       this.selectedStampFile = null;
       this.stampPreviewUrl = null;
+      console.log('[onStampFileSelected] No valid file found in event.');
     }
   }
 
@@ -631,7 +683,8 @@ export class InvoiceFormComponent implements OnInit {
     event.stopPropagation();
     this.selectedStampFile = null;
     this.stampPreviewUrl = null;
-    // Similar to clearLogoFile, might need to reset input element if not using a component that handles it
+    console.log('[clearStampFile] Stamp cleared.');
+    // Similar considerations for resetting ngx-mat-file-input value apply here.
   }
 
   // Helper to convert file to Base64
