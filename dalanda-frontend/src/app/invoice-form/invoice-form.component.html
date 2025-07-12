@@ -99,25 +99,70 @@
           <div class="form-content" [class.fade-in]="!useExistingClient" *ngIf="!useExistingClient">
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Client Name</mat-label>
-                <input matInput formControlName="newClientName" placeholder="Enter client name">
-                <mat-icon matPrefix>person</mat-icon>
-                <mat-error *ngIf="invoiceForm.get('newClientName')?.hasError('required')">
-                  Client name is required
+                <mat-label>Client Company Name</mat-label>
+                <input matInput formControlName="newClientName" placeholder="Enter client's company name">
+                <mat-icon matPrefix>business</mat-icon>
+                <mat-error *ngIf="hasError('newClientName', 'required')">
+                  Company name is required
                 </mat-error>
+                <mat-error *ngIf="hasError('newClientName', 'minlength')">
+                  Must be at least 2 characters
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Contact Name</mat-label>
+                <input matInput formControlName="newClientContactName" placeholder="Enter contact name">
+                <mat-icon matPrefix>person</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Email</mat-label>
+                <input matInput type="email" formControlName="newClientEmail" placeholder="client@example.com">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="hasError('newClientEmail', 'email')">
+                  Please enter a valid email
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="newClientPhoneNumber" placeholder="+1234567890">
+                <mat-icon matPrefix>phone</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>RIB</mat-label>
+                <input matInput formControlName="newClientRib" placeholder="Client's bank identity">
+                <mat-icon matPrefix>account_balance</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Fiscal Matricule</mat-label>
+                <input matInput formControlName="newClientFiscalMatricule" placeholder="Client's tax ID">
+                <mat-icon matPrefix>policy</mat-icon>
               </mat-form-field>
             </div>
 
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Additional Information</mat-label>
-              <textarea
-                matInput
-                formControlName="newClientOtherInfo"
-                placeholder="Address, contact details, notes..."
-                rows="3">
-              </textarea>
-              <mat-icon matPrefix>info</mat-icon>
+              <mat-label>Address</mat-label>
+              <textarea matInput formControlName="newClientAddress" placeholder="Enter client's full address" rows="3"></textarea>
+              <mat-icon matPrefix>location_on</mat-icon>
             </mat-form-field>
+
+            <!-- Placeholder for Custom Fields and Disabled Fields UI - to be added later -->
+            <!--
+            <div class="custom-fields-section">
+              <h4>Custom Fields</h4>
+              </div>
+            <div class="disabled-fields-section">
+              <h4>Disabled Fields</h4>
+            </div>
+            -->
           </div>
         </mat-card-content>
       </mat-card>
@@ -167,9 +212,42 @@
               <mat-label>Company Name</mat-label>
               <input matInput formControlName="newCompanyName" placeholder="Enter company name">
               <mat-icon matPrefix>domain</mat-icon>
-              <mat-error *ngIf="invoiceForm.get('newCompanyName')?.hasError('required')">
-                Company name is required
-              </mat-error>
+              <mat-error *ngIf="hasError('newCompanyName', 'required')">Company name is required</mat-error>
+            </mat-form-field>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Company Email</mat-label>
+                <input matInput type="email" formControlName="newCompanyEmail" placeholder="company@example.com">
+                <mat-icon matPrefix>email</mat-icon>
+                <mat-error *ngIf="hasError('newCompanyEmail', 'email')">Please enter a valid email</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Company Phone Number</mat-label>
+                <input matInput formControlName="newCompanyPhoneNumber" placeholder="+1234567890">
+                <mat-icon matPrefix>phone</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Company RIB</mat-label>
+                <input matInput formControlName="newCompanyRib" placeholder="Company's bank identity">
+                <mat-icon matPrefix>account_balance</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="modern-field">
+                <mat-label>Company Fiscal Matricule</mat-label>
+                <input matInput formControlName="newCompanyFiscalMatricule" placeholder="Company's tax ID">
+                <mat-icon matPrefix>policy</mat-icon>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="modern-field full-width">
+              <mat-label>Company Address</mat-label>
+              <textarea matInput formControlName="newCompanyAddress" placeholder="Enter company's full address" rows="3"></textarea>
+              <mat-icon matPrefix>location_on</mat-icon>
             </mat-form-field>
 
             <div class="form-row">

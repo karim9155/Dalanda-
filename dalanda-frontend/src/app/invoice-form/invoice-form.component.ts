@@ -91,11 +91,24 @@ export class InvoiceFormComponent implements OnInit {
   private createForm(): FormGroup {
     return this.fb.group({
       clientId: [null],
-      newClientName: [''],
-      newClientOtherInfo: [''],
+      // New Client Fields
+      newClientName: [''], // This is companyName for the Client
+      newClientContactName: [''],
+      newClientEmail: ['', [Validators.email]],
+      newClientPhoneNumber: [''],
+      newClientRib: [''],
+      newClientFiscalMatricule: [''],
+      newClientAddress: [''],
+      // We'll handle customFields and disabledFields in a later step
 
       companyId: [null],
+      // New Company Fields
       newCompanyName: [''],
+      newCompanyEmail: ['', [Validators.email]],
+      newCompanyPhoneNumber: [''],
+      newCompanyRib: [''],
+      newCompanyFiscalMatricule: [''],
+      newCompanyAddress: [''],
 
       invoiceNumber: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/)]],
       date: [new Date().toISOString().split('T')[0], Validators.required],
@@ -221,35 +234,64 @@ export class InvoiceFormComponent implements OnInit {
     if (this.useExistingClient) {
       this.invoiceForm.patchValue({
         newClientName: '',
-        newClientOtherInfo: ''
+        newClientContactName: '',
+        newClientEmail: '',
+        newClientPhoneNumber: '',
+        newClientRib: '',
+        newClientFiscalMatricule: '',
+        newClientAddress: ''
       });
       this.invoiceForm.get('clientId')?.setValidators([Validators.required]);
       this.invoiceForm.get('newClientName')?.clearValidators();
+      this.invoiceForm.get('newClientEmail')?.clearValidators();
+      // Clear validators for other new fields if they had any
     } else {
       this.invoiceForm.get('clientId')?.setValue(null);
       this.invoiceForm.get('clientId')?.clearValidators();
       this.invoiceForm.get('newClientName')?.setValidators([Validators.required, Validators.minLength(2)]);
+      this.invoiceForm.get('newClientEmail')?.setValidators([Validators.email]); // Keep email validation
+      // Set validators for other new fields if needed
     }
 
     this.invoiceForm.get('clientId')?.updateValueAndValidity();
     this.invoiceForm.get('newClientName')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientContactName')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientEmail')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientPhoneNumber')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientRib')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientFiscalMatricule')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientAddress')?.updateValueAndValidity();
   }
 
   toggleCompanyMode(): void {
     this.useExistingCompany = !this.useExistingCompany;
 
     if (this.useExistingCompany) {
-      this.invoiceForm.get('newCompanyName')?.setValue('');
+      this.invoiceForm.patchValue({
+        newCompanyName: '',
+        newCompanyEmail: '',
+        newCompanyPhoneNumber: '',
+        newCompanyRib: '',
+        newCompanyFiscalMatricule: '',
+        newCompanyAddress: ''
+      });
       this.invoiceForm.get('companyId')?.setValidators([Validators.required]);
       this.invoiceForm.get('newCompanyName')?.clearValidators();
+      this.invoiceForm.get('newCompanyEmail')?.clearValidators();
     } else {
       this.invoiceForm.get('companyId')?.setValue(null);
       this.invoiceForm.get('companyId')?.clearValidators();
       this.invoiceForm.get('newCompanyName')?.setValidators([Validators.required, Validators.minLength(2)]);
+      this.invoiceForm.get('newCompanyEmail')?.setValidators([Validators.email]);
     }
 
     this.invoiceForm.get('companyId')?.updateValueAndValidity();
     this.invoiceForm.get('newCompanyName')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyEmail')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyPhoneNumber')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyRib')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyFiscalMatricule')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyAddress')?.updateValueAndValidity();
   }
 
   private loadClients(): void {
@@ -389,13 +431,22 @@ export class InvoiceFormComponent implements OnInit {
 
   private prepareClientObservable(formValue: any): Observable<{ id: number }> {
     if (this.useExistingClient) {
-      return of({ id: formValue.clientId });
+      // Ensure clientId is a number. If it's coming from a form, it might be a string.
+      const clientId = typeof formValue.clientId === 'string' ? parseInt(formValue.clientId, 10) : formValue.clientId;
+      return of({ id: clientId });
     } else {
-      return this.clientService.create({
-        id: formValue.clientId,
+      // Construct the new client object with all fields
+      const newClient: Partial<Client> = { // Use Partial<Client> as id will be undefined
         companyName: formValue.newClientName,
-        otherInfo: formValue.newClientOtherInfo
-      }).pipe(map(c => ({ id: c.id })));
+        contactName: formValue.newClientContactName,
+        email: formValue.newClientEmail,
+        phoneNumber: formValue.newClientPhoneNumber,
+        rib: formValue.newClientRib,
+        fiscalMatricule: formValue.newClientFiscalMatricule,
+        address: formValue.newClientAddress
+        // customFields and disabledFields will be added later
+      };
+      return this.clientService.create(newClient as Client).pipe(map(c => ({ id: c.id })));
     }
   }
 
@@ -406,14 +457,18 @@ export class InvoiceFormComponent implements OnInit {
 
     if (this.useExistingCompany) {
       console.log('[prepareCompanyObservable] Preparing EXISTING company with ID:', formValue.companyId);
-      return of({ id: formValue.companyId, companyName: '', logo: undefined, stampSignature: undefined }); // Added dummy fields to satisfy type, actual data not used
+      const companyId = typeof formValue.companyId === 'string' ? parseInt(formValue.companyId, 10) : formValue.companyId;
+      return of({ id: companyId });
     } else {
       console.log('[prepareCompanyObservable] Preparing NEW company.');
-      console.log('[prepareCompanyObservable] Selected Logo File (for new company):', this.selectedLogoFile);
-      console.log('[prepareCompanyObservable] Selected Stamp File (for new company):', this.selectedStampFile);
       // Prepare company data
-      const companyData: Partial<Company> = { // Use Partial<Company> for flexibility
-        companyName: formValue.newCompanyName
+      const companyData: Partial<Company> = {
+        companyName: formValue.newCompanyName,
+        email: formValue.newCompanyEmail,
+        phoneNumber: formValue.newCompanyPhoneNumber,
+        rib: formValue.newCompanyRib,
+        fiscalMatricule: formValue.newCompanyFiscalMatricule,
+        address: formValue.newCompanyAddress
       };
 
       // Observables for file conversions

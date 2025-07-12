@@ -24,15 +24,39 @@ public class InvoiceMapper {
         if (client == null) {
             return null;
         }
-        return new ClientDTO(client.getId(), client.getCompanyName(), client.getOtherInfo());
+        // Map all fields from Client entity to ClientDTO
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setId(client.getId());
+        clientDTO.setCompanyName(client.getCompanyName());
+        clientDTO.setContactName(client.getContactName());
+        clientDTO.setEmail(client.getEmail());
+        clientDTO.setPhoneNumber(client.getPhoneNumber());
+        clientDTO.setRib(client.getRib());
+        clientDTO.setFiscalMatricule(client.getFiscalMatricule());
+        clientDTO.setAddress(client.getAddress());
+        clientDTO.setCustomFields(client.getCustomFields());
+        clientDTO.setDisabledFields(client.getDisabledFields());
+        return clientDTO;
     }
 
     public CompanyDTO toCompanyDTO(Company company) {
         if (company == null) {
             return null;
         }
-        // Assuming logo and stampSignature are not needed for the list view DTO
-        return new CompanyDTO(company.getId(), company.getCompanyName());
+        // Map all fields from Company entity to CompanyDTO
+        CompanyDTO companyDTO = new CompanyDTO();
+        companyDTO.setId(company.getId());
+        companyDTO.setCompanyName(company.getCompanyName());
+        companyDTO.setEmail(company.getEmail());
+        companyDTO.setPhoneNumber(company.getPhoneNumber());
+        companyDTO.setRib(company.getRib());
+        companyDTO.setFiscalMatricule(company.getFiscalMatricule());
+        companyDTO.setAddress(company.getAddress());
+        companyDTO.setCustomFields(company.getCustomFields());
+        companyDTO.setDisabledFields(company.getDisabledFields());
+        // Note: byte[] fields like logo and stampSignature are not mapped here.
+        // They are typically handled separately if needed in DTOs (e.g., as URLs or Base64 strings).
+        return companyDTO;
     }
 
     public InvoiceItemDTO toInvoiceItemDTO(InvoiceItem item) {

@@ -1,11 +1,14 @@
 // src/main/java/com/example/dalanda/pdf/ItextPdfGenerator.java
 package com.example.dalanda.ServicesImp;
 
+import com.example.dalanda.Entities.Client;
+import com.example.dalanda.Entities.Company;
 import com.example.dalanda.Entities.Invoice;
 import com.example.dalanda.Entities.InvoiceItem;
 import com.example.dalanda.Entities.TaxOption;
 import com.example.dalanda.Services.PdfGenerator;
-import com.example.dalanda.ServicesImp.TaxStrategyFactory;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import org.slf4j.Logger;
@@ -13,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +27,7 @@ import java.util.stream.Collectors;
 @Component
 public class ItextPdfGenerator implements PdfGenerator {
     private static final Logger log = LoggerFactory.getLogger(ItextPdfGenerator.class);
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     // Fonts
     private static final Font FONT_TITLE = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 22, BaseColor.DARK_GRAY);
@@ -101,7 +107,7 @@ public class ItextPdfGenerator implements PdfGenerator {
         partiesTable.setSpacingAfter(25f);
 
         // From (Company)
-        PdfPCell fromCell = createPartyCell("DE (Vendeur)", inv.getCompany().getCompanyName(), ""); // Add address if available
+        PdfPCell fromCell = createCompanyPartyCell("DE (Vendeur)", inv.getCompany());
         partiesTable.addCell(fromCell);
 
         PdfPCell spacerCell = new PdfPCell(); // Spacer
@@ -109,7 +115,7 @@ public class ItextPdfGenerator implements PdfGenerator {
         partiesTable.addCell(spacerCell);
 
         // To (Client)
-        PdfPCell toCell = createPartyCell("À (Client)", inv.getClient().getCompanyName(), ""); // Add address if available
+        PdfPCell toCell = createClientPartyCell("À (Client)", inv.getClient());
         partiesTable.addCell(toCell);
         doc.add(partiesTable);
 
@@ -214,25 +220,89 @@ public class ItextPdfGenerator implements PdfGenerator {
         return baos.toByteArray();
     }
 
-    private PdfPCell createPartyCell(String title, String name, String address) {
+    private PdfPCell createCompanyPartyCell(String title, Company company) {
         PdfPCell cell = new PdfPCell();
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setPaddingBottom(10f);
+
+        List<String> disabledFields = parseDisabledFields(company.getDisabledFields());
 
         Paragraph titleP = new Paragraph(title.toUpperCase(), FONT_SUBHEADER);
         titleP.setSpacingAfter(3f);
         cell.addElement(titleP);
 
-        Paragraph nameP = new Paragraph(name, FONT_VALUE);
-        cell.addElement(nameP);
+        addDetailIfNotDisabled(cell, "Nom de la société", company.getCompanyName(), disabledFields);
+        addDetailIfNotDisabled(cell, "Adresse", company.getAddress(), disabledFields);
+        addDetailIfNotDisabled(cell, "E-Mail", company.getEmail(), disabledFields);
+        addDetailIfNotDisabled(cell, "Numéro de téléphone", company.getPhoneNumber(), disabledFields);
+        addDetailIfNotDisabled(cell, "RIB", company.getRib(), disabledFields);
+        addDetailIfNotDisabled(cell, "Matricule Fiscal", company.getFiscalMatricule(), disabledFields);
 
-        if (address != null && !address.isEmpty()) {
-            Paragraph addressP = new Paragraph(address, FONT_VALUE);
-            addressP.setSpacingBefore(2f);
-            cell.addElement(addressP);
-        }
+        addCustomFields(cell, company.getCustomFields(), disabledFields);
         return cell;
     }
+
+    private PdfPCell createClientPartyCell(String title, Client client) {
+        PdfPCell cell = new PdfPCell();
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setPaddingBottom(10f);
+
+        List<String> disabledFields = parseDisabledFields(client.getDisabledFields());
+
+        Paragraph titleP = new Paragraph(title.toUpperCase(), FONT_SUBHEADER);
+        titleP.setSpacingAfter(3f);
+        cell.addElement(titleP);
+
+        addDetailIfNotDisabled(cell, "Nom de la société", client.getCompanyName(), disabledFields);
+        addDetailIfNotDisabled(cell, "Nom du contact", client.getContactName(), disabledFields);
+        addDetailIfNotDisabled(cell, "Adresse", client.getAddress(), disabledFields);
+        addDetailIfNotDisabled(cell, "E-Mail", client.getEmail(), disabledFields);
+        addDetailIfNotDisabled(cell, "Numéro de téléphone", client.getPhoneNumber(), disabledFields);
+        addDetailIfNotDisabled(cell, "RIB", client.getRib(), disabledFields);
+        addDetailIfNotDisabled(cell, "Matricule Fiscal", client.getFiscalMatricule(), disabledFields);
+
+        addCustomFields(cell, client.getCustomFields(), disabledFields);
+        return cell;
+    }
+
+    private List<String> parseDisabledFields(String disabledFieldsJson) {
+        if (disabledFieldsJson == null || disabledFieldsJson.trim().isEmpty()) {
+            return Collections.emptyList();
+        }
+        try {
+            return objectMapper.readValue(disabledFieldsJson, new TypeReference<List<String>>() {});
+        } catch (IOException e) {
+            log.error("Error parsing disabledFields JSON: {}", e.getMessage());
+            return Collections.emptyList(); // Return empty list on error
+        }
+    }
+
+    private void addDetailIfNotDisabled(PdfPCell cell, String label, String value, List<String> disabledFields) {
+        if (value != null && !value.isEmpty() && !disabledFields.contains(label)) {
+            Paragraph p = new Paragraph();
+            p.add(new Chunk(label + ": ", FONT_LABEL));
+            p.add(new Chunk(value, FONT_VALUE));
+            p.setSpacingBefore(2f);
+            cell.addElement(p);
+        }
+    }
+
+    private void addCustomFields(PdfPCell cell, String customFieldsJson, List<String> disabledFields) {
+        if (customFieldsJson == null || customFieldsJson.trim().isEmpty()) {
+            return;
+        }
+        try {
+            Map<String, String> customFieldsMap = objectMapper.readValue(customFieldsJson, new TypeReference<Map<String, String>>() {});
+            for (Map.Entry<String, String> entry : customFieldsMap.entrySet()) {
+                if (!disabledFields.contains(entry.getKey())) { // Also check if custom field key is in disabled list
+                    addDetailIfNotDisabled(cell, entry.getKey(), entry.getValue(), disabledFields);
+                }
+            }
+        } catch (IOException e) {
+            log.error("Error parsing customFields JSON: {}", e.getMessage());
+        }
+    }
+
 
     private void addMetaInfo(PdfPTable table, String label, String value) {
         PdfPCell labelCell = new PdfPCell(new Phrase(label, FONT_LABEL));
