@@ -20,6 +20,7 @@ import { TaxOption } from '../models/tax-option';
 import { FullInvoicePayload } from '../models/full-invoice-payload';
 import { of, forkJoin, Observable, from } from 'rxjs';
 import { switchMap, map, catchError, finalize } from 'rxjs/operators';
+import { FieldManagerDialogComponent, FieldManagerDialogData } from '../field-manager-dialog/field-manager-dialog.component';
 
 @Component({
   selector: 'app-invoice-form',
@@ -59,6 +60,14 @@ export class InvoiceFormComponent implements OnInit {
   logoPreviewUrl: string | ArrayBuffer | null = null;
   selectedStampFile: File | null = null;
   stampPreviewUrl: string | ArrayBuffer | null = null;
+
+  // State for new client's custom/disabled fields
+  newClientCustomFields: { [key: string]: string } = {};
+  newClientDisabledFields: string[] = [];
+
+  // State for new company's custom/disabled fields
+  newCompanyCustomFields: { [key: string]: string } = {};
+  newCompanyDisabledFields: string[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -443,11 +452,42 @@ export class InvoiceFormComponent implements OnInit {
         phoneNumber: formValue.newClientPhoneNumber,
         rib: formValue.newClientRib,
         fiscalMatricule: formValue.newClientFiscalMatricule,
-        address: formValue.newClientAddress
-        // customFields and disabledFields will be added later
+        address: formValue.newClientAddress,
+        // Add custom and disabled fields from component state
+        customFields: JSON.stringify(this.newClientCustomFields),
+        disabledFields: JSON.stringify(this.newClientDisabledFields)
       };
       return this.clientService.create(newClient as Client).pipe(map(c => ({ id: c.id })));
     }
+  }
+
+  openClientFieldManager(): void {
+    const dialogData: FieldManagerDialogData = {
+      standardFields: [
+        'Contact Name',
+        'Email',
+        'Phone Number',
+        'RIB',
+        'Fiscal Matricule',
+        'Address'
+      ],
+      customFields: this.newClientCustomFields,
+      disabledFields: this.newClientDisabledFields
+    };
+
+    const dialogRef = this.dialog.open(FieldManagerDialogComponent, {
+      width: '700px',
+      autoFocus: false,
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.newClientCustomFields = result.customFields;
+        this.newClientDisabledFields = result.disabledFields;
+        this.showSnackBar('Client field settings have been updated.', 'success');
+      }
+    });
   }
 
   private prepareCompanyObservable(formValue: any): Observable<{ id: number }> {
@@ -468,7 +508,9 @@ export class InvoiceFormComponent implements OnInit {
         phoneNumber: formValue.newCompanyPhoneNumber,
         rib: formValue.newCompanyRib,
         fiscalMatricule: formValue.newCompanyFiscalMatricule,
-        address: formValue.newCompanyAddress
+        address: formValue.newCompanyAddress,
+        customFields: JSON.stringify(this.newCompanyCustomFields),
+        disabledFields: JSON.stringify(this.newCompanyDisabledFields)
       };
 
       // Observables for file conversions
@@ -497,6 +539,34 @@ export class InvoiceFormComponent implements OnInit {
         })
       );
     }
+  }
+
+  openCompanyFieldManager(): void {
+    const dialogData: FieldManagerDialogData = {
+      standardFields: [
+        'Email',
+        'Phone Number',
+        'RIB',
+        'Fiscal Matricule',
+        'Address'
+      ],
+      customFields: this.newCompanyCustomFields,
+      disabledFields: this.newCompanyDisabledFields
+    };
+
+    const dialogRef = this.dialog.open(FieldManagerDialogComponent, {
+      width: '700px',
+      autoFocus: false,
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.newCompanyCustomFields = result.customFields;
+        this.newCompanyDisabledFields = result.disabledFields;
+        this.showSnackBar('Company field settings have been updated.', 'success');
+      }
+    });
   }
 
   private buildInvoicePayload(formValue: any, clientId: number, companyId: number): {

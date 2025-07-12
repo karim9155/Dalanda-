@@ -1,0 +1,48 @@
+.disabled-fields-section, .custom-fields-section {
+  margin-bottom: 20px;
+}
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.custom-field-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.key-field {
+  flex: 1;
+}
+
+.value-field {
+  flex: 2;
+}
+
+mat-divider {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+h1 {
+  color: #3f51b5; /* Or your primary color */
+}
+
+h2 {
+  margin-top: 0;
+  font-weight: 500;
+}
+
+p {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+[mat-dialog-actions] {
+  padding: 16px 24px;
+}

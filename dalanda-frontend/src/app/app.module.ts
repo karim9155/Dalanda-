@@ -29,6 +29,7 @@ import {LoginComponent} from './auth/login/login.component';
 import { PdfPreviewDialogComponent } from './pdf-preview-dialog/pdf-preview-dialog.component';
 import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
 import {MaterialFileInputModule} from 'ngx-custom-material-file-input';
+import { FieldManagerDialogComponent } from './field-manager-dialog/field-manager-dialog.component';
 
 
 @NgModule({
@@ -38,7 +39,8 @@ import {MaterialFileInputModule} from 'ngx-custom-material-file-input';
     InvoiceFormComponent,
     LoginComponent,
     RegisterComponent,
-    PdfPreviewDialogComponent
+    PdfPreviewDialogComponent,
+    FieldManagerDialogComponent
   ],
   imports: [
     BrowserModule,

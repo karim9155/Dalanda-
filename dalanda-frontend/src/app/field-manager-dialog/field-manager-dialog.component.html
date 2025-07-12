@@ -1,0 +1,46 @@
+<h1 mat-dialog-title>Manage Client Fields</h1>
+
+<div mat-dialog-content [formGroup]="form">
+
+  <section class="disabled-fields-section">
+    <h2>Disable Standard Fields</h2>
+    <p>Select fields you want to hide on the final invoice.</p>
+    <div formGroupName="disabledFields" class="checkbox-grid">
+      <mat-checkbox *ngFor="let field of data.standardFields" [formControlName]="field">
+        {{ field }}
+      </mat-checkbox>
+    </div>
+  </section>
+
+  <mat-divider></mat-divider>
+
+  <section class="custom-fields-section">
+    <h2>Custom Fields</h2>
+    <p>Add your own custom key-value fields.</p>
+    <div formArrayName="customFields">
+      <div *ngFor="let customField of customFieldsArray.controls; let i = index" [formGroupName]="i" class="custom-field-row">
+        <mat-form-field appearance="outline" class="key-field">
+          <mat-label>Field Name</mat-label>
+          <input matInput formControlName="key" placeholder="e.g., Project ID">
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="value-field">
+          <mat-label>Field Value</mat-label>
+          <input matInput formControlName="value" placeholder="e.g., PROJ-123">
+        </mat-form-field>
+        <button mat-icon-button color="warn" (click)="removeCustomField(i)" aria-label="Remove custom field">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </div>
+    <button mat-stroked-button color="primary" (click)="addCustomField()">
+      <mat-icon>add</mat-icon>
+      Add Custom Field
+    </button>
+  </section>
+
+</div>
+
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()">Save Changes</button>
+</div>
