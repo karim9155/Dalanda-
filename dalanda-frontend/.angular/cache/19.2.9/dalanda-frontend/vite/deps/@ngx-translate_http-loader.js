@@ -9,8 +9,8 @@ import {
   ɵɵdefineInjectable,
   ɵɵinject
 } from "./chunk-Z67EBTI5.js";
-import "./chunk-FFZIAYYX.js";
 import "./chunk-6Q4RANH6.js";
+import "./chunk-FFZIAYYX.js";
 import "./chunk-CXCX2JKZ.js";
 
 // node_modules/@ngx-translate/http-loader/fesm2022/ngx-translate-http-loader.mjs

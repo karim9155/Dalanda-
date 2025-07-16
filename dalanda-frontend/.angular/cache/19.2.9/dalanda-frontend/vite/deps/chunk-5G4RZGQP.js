@@ -5,7 +5,7 @@ import {
 } from "./chunk-IS4I5LDK.js";
 import {
   MatCommonModule
-} from "./chunk-5HD6QPAM.js";
+} from "./chunk-L5N6IVMR.js";
 import {
   Directive,
   Injectable,
@@ -475,4 +475,4 @@ export {
   MatNativeDateModule,
   provideNativeDateAdapter
 };
-//# sourceMappingURL=chunk-BWW6666W.js.map
+//# sourceMappingURL=chunk-5G4RZGQP.js.map

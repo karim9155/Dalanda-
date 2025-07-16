@@ -34,6 +34,8 @@ import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-
 import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
+import { GcrsFormComponent } from './gcrs-form/gcrs-form.component';
+import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -48,7 +50,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     RegisterComponent,
     PdfPreviewDialogComponent,
     FieldManagerDialogComponent,
-    ConfirmationDialogComponent
+    ConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -89,6 +91,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatDialogClose,
     MatDialogTitle,
     TranslateModule,
+    MatRadioGroup,
+    MatRadioButton,
 
 
   ],

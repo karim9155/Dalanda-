@@ -69,6 +69,10 @@ export class HomeComponent implements OnInit{
     }
   }
 
+  navigateToGCRSForm(): void {
+    this.router.navigate(['/gcrs']);
+  }
+
   logout() {
     // 1) clear the stored JWT
     this.tokenSvc.clear();
