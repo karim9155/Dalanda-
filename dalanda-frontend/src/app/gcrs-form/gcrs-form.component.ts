@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GcrsService } from '../services/gcrs.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-gcrs-form',
@@ -14,7 +15,8 @@ export class GcrsFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private gcrsService: GcrsService
+    private gcrsService: GcrsService,
+    private router: Router,
   ) {
     this.form = this.fb.group({
       dateFacturation: ['', Validators.required],
@@ -46,5 +48,9 @@ export class GcrsFormComponent implements OnInit {
 
   download(): void {
     this.gcrsService.download(this.form.value);
+  }
+  cancel(): void {
+
+    this.router.navigate(['/home']);
   }
 }

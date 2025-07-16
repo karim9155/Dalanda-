@@ -15,3 +15,7 @@ mat-form-field {
 button {
   margin-right: 10px;
 }
+.back-button {
+  background-color: #000;   /* black background */
+  color: #fff;              /* white arrow icon */
+}
