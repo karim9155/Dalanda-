@@ -10,6 +10,8 @@ import {MatSelectChange} from '@angular/material/select'; // Import MatSelectCha
 import { MatDialog } from '@angular/material/dialog';
 import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
 import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -26,8 +28,11 @@ export class HomeComponent implements OnInit{
     private invoiceService: InvoiceService,
     private router: Router,
     private snackBar: MatSnackBar, // Inject MatSnackBar
-    private dialog: MatDialog // Inject MatDialog
-  ) {}
+    private dialog: MatDialog, // Inject MatDialog
+    private translate: TranslateService
+  ) {
+    translate.setDefaultLang('en');
+  }
   ngOnInit() {
     // read the real user id that you stored on login
     const uuid = localStorage.getItem('userUuid');
@@ -208,5 +213,33 @@ export class HomeComponent implements OnInit{
         this.snackBar.open('Failed to load PDF for preview. Please try again.', 'Error', { duration: 3000 });
       }
     });
+  }
+
+  deleteInvoice(invoiceId: number, event: MouseEvent): void {
+    event.stopPropagation();
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: { title: 'Confirm Deletion', message: 'Are you sure you want to delete this invoice?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.invoiceService.deleteInvoice(invoiceId).subscribe({
+          next: () => {
+            this.invoices = this.invoices.filter(inv => inv.id !== invoiceId);
+            this.snackBar.open('Invoice deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: err => {
+            console.error('Error deleting invoice', err);
+            this.snackBar.open('Failed to delete invoice. Please try again.', 'Error', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  switchLanguage(language: string) {
+    this.translate.use(language);
   }
 }

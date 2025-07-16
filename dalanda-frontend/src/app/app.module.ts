@@ -27,10 +27,17 @@ import { MatIcon }           from '@angular/material/icon';
 import {RegisterComponent} from './auth/register/register.component';
 import {LoginComponent} from './auth/login/login.component';
 import { PdfPreviewDialogComponent } from './pdf-preview-dialog/pdf-preview-dialog.component';
-import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
 import {MaterialFileInputModule} from 'ngx-custom-material-file-input';
 import { FieldManagerDialogComponent } from './field-manager-dialog/field-manager-dialog.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient } from '@angular/common/http';
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -40,12 +47,20 @@ import { FieldManagerDialogComponent } from './field-manager-dialog/field-manage
     LoginComponent,
     RegisterComponent,
     PdfPreviewDialogComponent,
-    FieldManagerDialogComponent
+    FieldManagerDialogComponent,
+    ConfirmationDialogComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     BrowserAnimationsModule,
     MaterialModule,
     AuthModule,
@@ -71,6 +86,10 @@ import { FieldManagerDialogComponent } from './field-manager-dialog/field-manage
     MatDialogContent,
     MatDialogActions,
     MaterialFileInputModule,
+    MatDialogClose,
+    MatDialogTitle,
+    TranslateModule,
+
 
   ],
   providers: [

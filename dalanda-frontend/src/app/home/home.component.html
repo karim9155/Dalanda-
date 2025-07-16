@@ -7,6 +7,14 @@
       </div>
       <span class="spacer"></span>
       <div class="user-section">
+        <mat-form-field appearance="outline" class="language-select-field">
+          <mat-label>Language</mat-label>
+          <mat-select (selectionChange)="switchLanguage($event.value)">
+            <mat-option value="en">English</mat-option>
+            <mat-option value="fr">Français</mat-option>
+            <mat-option value="ar">العربية</mat-option>
+          </mat-select>
+        </mat-form-field>
         <button mat-icon-button class="profile-button">
           <mat-icon>account_circle</mat-icon>
         </button>
@@ -21,8 +29,8 @@
   <div class="home-content">
     <div class="content-header">
       <div class="header-info">
-        <h1 class="page-title">Your Invoices</h1>
-        <p class="page-subtitle">Manage and track all your invoices in one place</p>
+        <h1 class="page-title">{{ 'HOME.TITLE' | translate }}</h1>
+        <p class="page-subtitle">{{ 'HOME.SUBTITLE' | translate }}</p>
       </div>
       <div class="header-actions">
         <button
@@ -31,7 +39,7 @@
           class="create-button"
           (click)="navigateToInvoiceForm()">
           <mat-icon>add</mat-icon>
-          Create Invoice
+          {{ 'HOME.CREATE_INVOICE' | translate }}
         </button>
       </div>
     </div>
@@ -100,6 +108,9 @@
               <button mat-icon-button color="accent" (click)="openPdfPreview(inv, $event)" [attr.aria-label]="'Preview PDF for ' + inv.invoiceNumber">
                 <mat-icon>picture_as_pdf</mat-icon>
               </button>
+              <button mat-icon-button color="warn" (click)="deleteInvoice(inv.id, $event)" [attr.aria-label]="'Delete ' + inv.invoiceNumber">
+                <mat-icon>delete</mat-icon>
+              </button>
               <button mat-icon-button [attr.aria-label]="'More options for ' + inv.invoiceNumber">
                 <mat-icon>more_vert</mat-icon>
               </button>
@@ -113,9 +124,9 @@
           <div class="empty-illustration">
             <mat-icon class="empty-icon">receipt_long</mat-icon>
           </div>
-          <h2 class="empty-title">No invoices yet</h2>
+          <h2 class="empty-title">{{ 'HOME.NO_INVOICES_TITLE' | translate }}</h2>
           <p class="empty-description">
-            Start creating your first invoice to keep track of your business transactions
+            {{ 'HOME.NO_INVOICES_DESCRIPTION' | translate }}
           </p>
           <button
             mat-raised-button
@@ -123,7 +134,7 @@
             class="empty-action-button"
             (click)="navigateToInvoiceForm()">
             <mat-icon>add</mat-icon>
-            Create Your First Invoice
+            {{ 'HOME.CREATE_FIRST_INVOICE' | translate }}
           </button>
         </div>
       </ng-template>

@@ -34,7 +34,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "@angular/material/prebuilt-themes/magenta-violet.css",
@@ -55,6 +56,13 @@
                   "maximumWarning": "4kB",
                   "maximumError": "8kB"
                 }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "public"
+                },
+                "src/assets"
               ],
               "outputHashing": "all"
             },

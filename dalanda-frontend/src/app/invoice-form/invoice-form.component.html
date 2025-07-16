@@ -6,15 +6,15 @@
           <mat-icon>arrow_back</mat-icon>
         </button>
         <div class="toolbar-info">
-          <span class="toolbar-title">Create New Invoice</span>
-          <span class="toolbar-subtitle">Fill in the details to generate your invoice</span>
+          <span class="toolbar-title">{{ 'INVOICE_FORM.CREATE_NEW_INVOICE' | translate }}</span>
+          <span class="toolbar-subtitle">{{ 'INVOICE_FORM.FILL_DETAILS' | translate }}</span>
         </div>
       </div>
       <span class="spacer"></span>
       <div class="toolbar-actions">
         <button mat-stroked-button class="preview-button" type="button" (click)="previewInvoice()">
           <mat-icon>preview</mat-icon>
-          Preview
+          {{ 'INVOICE_FORM.PREVIEW' | translate }}
         </button>
       </div>
     </div>
@@ -30,28 +30,28 @@
             <div class="step-icon">
               <mat-icon>business</mat-icon>
             </div>
-            <span class="step-label">Client Info</span>
+            <span class="step-label">{{ 'INVOICE_FORM.CLIENT_INFO' | translate }}</span>
           </div>
           <div class="step-connector"></div>
           <div class="step active">
             <div class="step-icon">
               <mat-icon>receipt</mat-icon>
             </div>
-            <span class="step-label">Invoice Details</span>
+            <span class="step-label">{{ 'INVOICE_FORM.INVOICE_DETAILS' | translate }}</span>
           </div>
           <div class="step-connector"></div>
           <div class="step active">
             <div class="step-icon">
               <mat-icon>list</mat-icon>
             </div>
-            <span class="step-label">Items</span>
+            <span class="step-label">{{ 'INVOICE_FORM.ITEMS' | translate }}</span>
           </div>
           <div class="step-connector"></div>
           <div class="step">
             <div class="step-icon">
               <mat-icon>check</mat-icon>
             </div>
-            <span class="step-label">Review</span>
+            <span class="step-label">{{ 'INVOICE_FORM.REVIEW' | translate }}</span>
           </div>
         </div>
       </div>
@@ -62,8 +62,8 @@
           <div mat-card-avatar class="section-avatar client-avatar">
             <mat-icon>business</mat-icon>
           </div>
-          <mat-card-title class="section-title">Client Information</mat-card-title>
-          <mat-card-subtitle class="section-subtitle">Choose an existing client or create a new one</mat-card-subtitle>
+          <mat-card-title class="section-title">{{ 'INVOICE_FORM.CLIENT_INFORMATION' | translate }}</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">{{ 'INVOICE_FORM.CHOOSE_OR_CREATE_CLIENT' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="modern-card-content">
           <div class="toggle-section">
@@ -73,14 +73,14 @@
               (change)="toggleClientMode()">
               <span class="toggle-label">
                 <mat-icon>{{ useExistingClient ? 'person_search' : 'person_add' }}</mat-icon>
-                {{ useExistingClient ? 'Use Existing Client' : 'Create New Client' }}
+                {{ useExistingClient ? ('INVOICE_FORM.USE_EXISTING_CLIENT' | translate) : ('INVOICE_FORM.CREATE_NEW_CLIENT' | translate) }}
               </span>
             </mat-slide-toggle>
           </div>
 
           <div class="form-content" [class.fade-in]="useExistingClient" *ngIf="useExistingClient">
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Select Client</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.SELECT_CLIENT' | translate }}</mat-label>
               <mat-select formControlName="clientId">
                 <mat-option *ngFor="let client of clients" [value]="client.id">
                   <div class="select-option">
@@ -99,7 +99,7 @@
           <div class="form-content" [class.fade-in]="!useExistingClient" *ngIf="!useExistingClient">
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Client Company Name</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.CLIENT_COMPANY_NAME' | translate }}</mat-label>
                 <input matInput formControlName="newClientName" placeholder="Enter client's company name">
                 <mat-icon matPrefix>business</mat-icon>
                 <mat-error *ngIf="hasError('newClientName', 'required')">
@@ -111,7 +111,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Contact Name</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.CONTACT_NAME' | translate }}</mat-label>
                 <input matInput formControlName="newClientContactName" placeholder="Enter contact name">
                 <mat-icon matPrefix>person</mat-icon>
               </mat-form-field>
@@ -119,7 +119,7 @@
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Email</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.EMAIL' | translate }}</mat-label>
                 <input matInput type="email" formControlName="newClientEmail" placeholder="client@example.com">
                 <mat-icon matPrefix>email</mat-icon>
                 <mat-error *ngIf="hasError('newClientEmail', 'email')">
@@ -128,7 +128,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Phone Number</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.PHONE_NUMBER' | translate }}</mat-label>
                 <input matInput formControlName="newClientPhoneNumber" placeholder="+1234567890">
                 <mat-icon matPrefix>phone</mat-icon>
               </mat-form-field>
@@ -136,20 +136,20 @@
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>RIB</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.RIB' | translate }}</mat-label>
                 <input matInput formControlName="newClientRib" placeholder="Client's bank identity">
                 <mat-icon matPrefix>account_balance</mat-icon>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Fiscal Matricule</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.FISCAL_MATRICULE' | translate }}</mat-label>
                 <input matInput formControlName="newClientFiscalMatricule" placeholder="Client's tax ID">
                 <mat-icon matPrefix>policy</mat-icon>
               </mat-form-field>
             </div>
 
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Address</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.ADDRESS' | translate }}</mat-label>
               <textarea matInput formControlName="newClientAddress" placeholder="Enter client's full address" rows="3"></textarea>
               <mat-icon matPrefix>location_on</mat-icon>
             </mat-form-field>
@@ -158,7 +158,7 @@
             <div class="field-management-section">
               <button type="button" mat-stroked-button (click)="openClientFieldManager()">
                 <mat-icon>tune</mat-icon>
-                Manage Custom & Disabled Fields
+                {{ 'INVOICE_FORM.MANAGE_CUSTOM_FIELDS' | translate }}
               </button>
             </div>
           </div>
@@ -171,8 +171,8 @@
           <div mat-card-avatar class="section-avatar company-avatar">
             <mat-icon>domain</mat-icon>
           </div>
-          <mat-card-title class="section-title">Company Information</mat-card-title>
-          <mat-card-subtitle class="section-subtitle">Select your company details</mat-card-subtitle>
+          <mat-card-title class="section-title">{{ 'INVOICE_FORM.COMPANY_INFORMATION' | translate }}</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">{{ 'INVOICE_FORM.SELECT_YOUR_COMPANY' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="modern-card-content">
           <div class="toggle-section">
@@ -182,14 +182,14 @@
               (change)="toggleCompanyMode()">
               <span class="toggle-label">
                 <mat-icon>{{ useExistingCompany ? 'domain_verification' : 'add_business' }}</mat-icon>
-                {{ useExistingCompany ? 'Use Existing Company' : 'Create New Company' }}
+                {{ useExistingCompany ? ('INVOICE_FORM.USE_EXISTING_COMPANY' | translate) : ('INVOICE_FORM.CREATE_NEW_COMPANY' | translate) }}
               </span>
             </mat-slide-toggle>
           </div>
 
           <div class="form-content" [class.fade-in]="useExistingCompany" *ngIf="useExistingCompany">
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Select Company</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.SELECT_COMPANY' | translate }}</mat-label>
               <mat-select formControlName="companyId">
                 <mat-option *ngFor="let company of companies" [value]="company.id">
                   <div class="select-option">
@@ -207,7 +207,7 @@
 
           <div class="form-content" [class.fade-in]="!useExistingCompany" *ngIf="!useExistingCompany">
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Company Name</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.COMPANY_NAME' | translate }}</mat-label>
               <input matInput formControlName="newCompanyName" placeholder="Enter company name">
               <mat-icon matPrefix>domain</mat-icon>
               <mat-error *ngIf="hasError('newCompanyName', 'required')">Company name is required</mat-error>
@@ -215,14 +215,14 @@
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Company Email</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.COMPANY_EMAIL' | translate }}</mat-label>
                 <input matInput type="email" formControlName="newCompanyEmail" placeholder="company@example.com">
                 <mat-icon matPrefix>email</mat-icon>
                 <mat-error *ngIf="hasError('newCompanyEmail', 'email')">Please enter a valid email</mat-error>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Company Phone Number</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.COMPANY_PHONE_NUMBER' | translate }}</mat-label>
                 <input matInput formControlName="newCompanyPhoneNumber" placeholder="+1234567890">
                 <mat-icon matPrefix>phone</mat-icon>
               </mat-form-field>
@@ -230,20 +230,20 @@
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Company RIB</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.COMPANY_RIB' | translate }}</mat-label>
                 <input matInput formControlName="newCompanyRib" placeholder="Company's bank identity">
                 <mat-icon matPrefix>account_balance</mat-icon>
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field">
-                <mat-label>Company Fiscal Matricule</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.COMPANY_FISCAL_MATRICULE' | translate }}</mat-label>
                 <input matInput formControlName="newCompanyFiscalMatricule" placeholder="Company's tax ID">
                 <mat-icon matPrefix>policy</mat-icon>
               </mat-form-field>
             </div>
 
             <mat-form-field appearance="outline" class="modern-field full-width">
-              <mat-label>Company Address</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.COMPANY_ADDRESS' | translate }}</mat-label>
               <textarea matInput formControlName="newCompanyAddress" placeholder="Enter company's full address" rows="3"></textarea>
               <mat-icon matPrefix>location_on</mat-icon>
             </mat-form-field>
@@ -251,13 +251,13 @@
             <div class="field-management-section">
               <button type="button" mat-stroked-button (click)="openCompanyFieldManager()">
                 <mat-icon>tune</mat-icon>
-                Manage Custom & Disabled Fields
+                {{ 'INVOICE_FORM.MANAGE_CUSTOM_FIELDS' | translate }}
               </button>
             </div>
 
             <div class="form-row">
               <mat-form-field appearance="outline" class="modern-field file-input-field">
-                <mat-label>Company Logo</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.COMPANY_LOGO' | translate }}</mat-label>
                 <ngx-mat-file-input (change)="onLogoFileSelected($event)" accept="image/*"></ngx-mat-file-input>
                 <mat-icon matPrefix>image</mat-icon>
                 <button mat-icon-button matSuffix *ngIf="selectedLogoFile" (click)="clearLogoFile($event)">
@@ -266,7 +266,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field file-input-field">
-                <mat-label>Stamp Signature</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.STAMP_SIGNATURE' | translate }}</mat-label>
                 <ngx-mat-file-input (change)="onStampFileSelected($event)" accept="image/*"></ngx-mat-file-input>
                 <mat-icon matPrefix>badge</mat-icon>
                 <button mat-icon-button matSuffix *ngIf="selectedStampFile" (click)="clearStampFile($event)">
@@ -276,11 +276,11 @@
             </div>
             <div class="file-preview-row">
               <div *ngIf="logoPreviewUrl" class="file-preview-container">
-                <span class="preview-label">Logo Preview:</span>
+                <span class="preview-label">{{ 'INVOICE_FORM.LOGO_PREVIEW' | translate }}</span>
                 <img [src]="logoPreviewUrl" alt="Logo Preview" class="file-preview-image">
               </div>
               <div *ngIf="stampPreviewUrl" class="file-preview-container">
-                <span class="preview-label">Stamp Preview:</span>
+                <span class="preview-label">{{ 'INVOICE_FORM.STAMP_PREVIEW' | translate }}</span>
                 <img [src]="stampPreviewUrl" alt="Stamp Preview" class="file-preview-image">
               </div>
             </div>
@@ -295,13 +295,13 @@
           <div mat-card-avatar class="section-avatar details-avatar">
             <mat-icon>receipt</mat-icon>
           </div>
-          <mat-card-title class="section-title">Invoice Details</mat-card-title>
-          <mat-card-subtitle class="section-subtitle">Set invoice number and dates</mat-card-subtitle>
+          <mat-card-title class="section-title">{{ 'INVOICE_FORM.INVOICE_DETAILS' | translate }}</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">{{ 'INVOICE_FORM.INVOICE_DETAILS' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="modern-card-content">
           <div class="form-row">
             <mat-form-field appearance="outline" class="modern-field">
-              <mat-label>Invoice Number</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.INVOICE_NUMBER' | translate }}</mat-label>
               <input matInput formControlName="invoiceNumber" placeholder="INV-001">
               <mat-icon matPrefix>tag</mat-icon>
               <mat-error *ngIf="invoiceForm.get('invoiceNumber')?.hasError('required')">
@@ -310,7 +310,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="modern-field">
-              <mat-label>Invoice Date</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.INVOICE_DATE' | translate }}</mat-label>
               <input matInput [matDatepicker]="datePicker" formControlName="date">
               <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
               <mat-datepicker #datePicker></mat-datepicker>
@@ -321,7 +321,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="modern-field">
-              <mat-label>Due Date</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.DUE_DATE' | translate }}</mat-label>
               <input matInput [matDatepicker]="dueDatePicker" formControlName="dueDate">
               <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
               <mat-datepicker #dueDatePicker></mat-datepicker>
@@ -332,7 +332,7 @@
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="modern-field">
-              <mat-label>Status</mat-label>
+              <mat-label>{{ 'INVOICE_FORM.STATUS' | translate }}</mat-label>
               <mat-select formControlName="status">
                 <mat-option value="pending">Pending</mat-option>
                 <mat-option value="paid">Paid</mat-option>
@@ -354,17 +354,17 @@
           <div mat-card-avatar class="section-avatar items-avatar">
             <mat-icon>list</mat-icon>
           </div>
-          <mat-card-title class="section-title">Invoice Items</mat-card-title>
-          <mat-card-subtitle class="section-subtitle">Add products or services to your invoice</mat-card-subtitle>
+          <mat-card-title class="section-title">{{ 'INVOICE_FORM.INVOICE_ITEMS' | translate }}</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">{{ 'INVOICE_FORM.ADD_PRODUCTS_OR_SERVICES' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="modern-card-content">
           <div formArrayName="items" class="items-container">
             <div class="items-header">
-              <div class="header-item description-header">Description</div>
-              <div class="header-item qty-header">Qty</div>
-              <div class="header-item price-header">Unit Price</div>
-              <div class="header-item total-header">Total</div>
-              <div class="header-item actions-header">Actions</div>
+              <div class="header-item description-header">{{ 'INVOICE_FORM.DESCRIPTION' | translate }}</div>
+              <div class="header-item qty-header">{{ 'INVOICE_FORM.QTY' | translate }}</div>
+              <div class="header-item price-header">{{ 'INVOICE_FORM.UNIT_PRICE' | translate }}</div>
+              <div class="header-item total-header">{{ 'INVOICE_FORM.TOTAL' | translate }}</div>
+              <div class="header-item actions-header">{{ 'INVOICE_FORM.ACTIONS' | translate }}</div>
             </div>
 
             <div *ngFor="let item of itemsArray.controls; let i = index"
@@ -372,7 +372,7 @@
                  class="item-row modern-item-row">
 
               <mat-form-field appearance="outline" class="modern-field item-description">
-                <mat-label>Description</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.DESCRIPTION' | translate }}</mat-label>
                 <input matInput formControlName="description" placeholder="Item description">
                 <mat-error *ngIf="item.get('description')?.hasError('required')">
                   Description is required
@@ -380,7 +380,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field item-qty">
-                <mat-label>Qty</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.QTY' | translate }}</mat-label>
                 <input matInput type="number" formControlName="qty" min="1">
                 <mat-error *ngIf="item.get('qty')?.hasError('required')">
                   Required
@@ -391,7 +391,7 @@
               </mat-form-field>
 
               <mat-form-field appearance="outline" class="modern-field item-price">
-                <mat-label>Price</mat-label>
+                <mat-label>{{ 'INVOICE_FORM.UNIT_PRICE' | translate }}</mat-label>
                 <input matInput type="number" formControlName="unitPrice" min="0" step="0.01">
                 <span matPrefix>$</span>
                 <mat-error *ngIf="item.get('unitPrice')?.hasError('required')">
@@ -430,22 +430,22 @@
                 class="add-item-button"
                 (click)="addItem()">
                 <mat-icon>add</mat-icon>
-                Add Item
+                {{ 'INVOICE_FORM.ADD_ITEM' | translate }}
               </button>
             </div>
 
             <!-- Invoice Summary -->
             <div class="invoice-summary">
               <div class="summary-row">
-                <span class="summary-label">Subtotal:</span>
+                <span class="summary-label">{{ 'INVOICE_FORM.SUBTOTAL' | translate }}</span>
                 <span class="summary-value">{{ calculateSubtotal() | currency }}</span>
               </div>
               <div class="summary-row">
-                <span class="summary-label">Tax:</span>
+                <span class="summary-label">{{ 'INVOICE_FORM.TAX' | translate }}</span>
                 <span class="summary-value">{{ calculateTax() | currency }}</span>
               </div>
               <div class="summary-row total-row">
-                <span class="summary-label">Total:</span>
+                <span class="summary-label">{{ 'INVOICE_FORM.TOTAL_AMOUNT' | translate }}</span>
                 <span class="summary-value">{{ calculateTotal() | currency }}</span>
               </div>
             </div>
@@ -459,8 +459,8 @@
           <div mat-card-avatar class="section-avatar tax-avatar">
             <mat-icon>calculate</mat-icon>
           </div>
-          <mat-card-title class="section-title">Tax Options</mat-card-title>
-          <mat-card-subtitle class="section-subtitle">Select applicable taxes</mat-card-subtitle>
+          <mat-card-title class="section-title">{{ 'INVOICE_FORM.TAX_OPTIONS' | translate }}</mat-card-title>
+          <mat-card-subtitle class="section-subtitle">{{ 'INVOICE_FORM.SELECT_APPLICABLE_TAXES' | translate }}</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content class="modern-card-content">
           <div class="tax-options-grid">
@@ -488,14 +488,14 @@
               class="cancel-button"
               (click)="cancel()">
               <mat-icon>close</mat-icon>
-              Cancel
+              {{ 'INVOICE_FORM.CANCEL' | translate }}
             </button>
             <button
               type="button"
               mat-stroked-button
               class="save-draft-button">
               <mat-icon>save</mat-icon>
-              Save Draft
+              {{ 'INVOICE_FORM.SAVE_DRAFT' | translate }}
             </button>
           </div>
 
@@ -508,8 +508,8 @@
               [disabled]="invoiceForm.invalid || isLoading">
               <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
               <mat-icon *ngIf="!isLoading">check</mat-icon>
-              <span *ngIf="!isLoading">Create Invoice</span>
-              <span *ngIf="isLoading">Creating...</span>
+              <span *ngIf="!isLoading">{{ 'INVOICE_FORM.CREATE_INVOICE_BUTTON' | translate }}</span>
+              <span *ngIf="isLoading">{{ 'INVOICE_FORM.CREATING_INVOICE' | translate }}</span>
             </button>
           </div>
         </div>
