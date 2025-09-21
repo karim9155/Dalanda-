@@ -501,57 +501,119 @@ This sprint successfully delivered a powerful and innovative feature. The conver
 \end{figure}
 
 \chapter{Tests and Validation}
-% Aim for 5-8 pages. This shows engineering rigor.
 \section{Introduction}
-To ensure the quality and reliability of the Dalanda application, a multi-level testing strategy has been implemented...
+To ensure the quality, reliability, and robustness of the Dalanda application, a comprehensive, multi-level testing strategy was implemented. This strategy covers everything from individual code units to the complete, integrated system. The following sections describe the different types of tests that were conducted throughout the project's lifecycle.
+
 \section{Unit Tests}
+Unit tests were written to verify the functionality of individual components in isolation.
+
 \subsection{Backend Tests}
-% Describe your approach to unit testing services and controllers. Mention tools like JUnit 5, Mockito. Show a simple test case.
-\begin{lstlisting}[language=Java, caption={Example of a unit test for InvoiceService}]
-// A simple JUnit test case for a method in your service
-@Test
-void testCreateInvoice() {
-    // ...
+The backend, built with Spring Boot, was tested using \textbf{JUnit 5} and \textbf{Mockito}. Services were tested by mocking their dependencies (like repositories) to ensure that business logic was correctly implemented. For example, the `InvoiceService` was tested to confirm that invoice totals were calculated correctly and that invoice statuses were managed properly. Controllers were tested using `MockMvc` to verify that they handled HTTP requests correctly, returned the expected status codes, and secured the endpoints properly.
+
+\begin{lstlisting}[language=Java, caption={Example of a Unit Test for InvoiceService}]
+@ExtendWith(MockitoExtension.class)
+class InvoiceServiceTest {
+
+    @Mock
+    private InvoiceRepository invoiceRepository;
+
+    @InjectMocks
+    private InvoiceServiceImpl invoiceService;
+
+    @Test
+    void testCreateInvoice_calculatesTotalCorrectly() {
+        // Given
+        Invoice newInvoice = new Invoice();
+        // ... set up invoice items and taxes
+
+        // When
+        Invoice savedInvoice = invoiceService.createInvoice(newInvoice);
+
+        // Then
+        // ... assert that the total is calculated as expected
+        assertThat(savedInvoice.getTotal()).isEqualTo(expectedTotal);
+    }
 }
 \end{lstlisting}
+
 \subsection{Frontend Tests}
-% Describe your approach to unit testing Angular components. Mention Karma and Jasmine. Show a simple test case for a component.
+The Angular frontend was tested using \textbf{Karma} and \textbf{Jasmine}. Unit tests were created for individual components to ensure they rendered correctly and that their internal logic (e.g., form validation, event handling) worked as expected. Services, like the `AuthService`, were also tested by mocking the `HttpClient` to simulate API calls and verify that the service handled responses and errors correctly.
+
 \section{Integration Tests}
-% Describe how you tested the integration between different parts of your system.
+Integration tests were performed to verify the interaction between different parts of the system.
+
 \subsection{REST API Test}
-% Mention tools like Postman or REST Assured to test your API endpoints.
+The REST API was tested using \textbf{Postman}. A collection of requests was created to test all endpoints, verifying authentication, data validation, and correct responses for the entire CRUD lifecycle of each entity (clients, companies, invoices). These tests ensured that the frontend and backend could communicate correctly.
+
 \subsection{n8n Workflow Test}
-% Explain how you manually tested the n8n workflow from end-to-end, from sending a message on Telegram to verifying the data in your database.
+The n8n workflow, which represents a critical integration point, was tested end-to-end. This involved sending specific messages from a Telegram client and verifying the entire chain of events:
+\begin{enumerate}
+    \item The message is received by the n8n workflow.
+    \item The AI node correctly parses the intent and entities.
+    \item The workflow successfully calls the backend API.
+    \item A new invoice is created in the database with the correct information.
+\end{enumerate}
+This manual but crucial testing ensured that the entire conversational assistant feature was working as intended.
+
 \section{Functional Validation}
-% Present a table that links your functional requirements (from Chapter 3) to test scenarios, and show their status (e.g., "Passé").
+Functional validation was performed to ensure that the application met the requirements defined in the user stories. The following table links the main functional requirements to their test scenarios and results.
+
 \begin{table}[H]
     \centering
-    \caption{Validation of use cases.}
+    \caption{Validation of Key Use Cases}
     \label{tab:validation}
-    \begin{tabular}{l l l}
+    \begin{tabular}{l p{7cm} l}
         \toprule
-        \textbf{ID Need} & \textbf{Test Scenario} & \textbf{Result} \\
+        \textbf{ID} & \textbf{Test Scenario} & \textbf{Result} \\
         \midrule
-        UF-01 & The user enters their credentials, receives a token. & Passed \\
-        UF-04 & The user sends "create an invoice" on Telegram... & Passed \\
+        UF-01 & A new user registers and logs in successfully. An existing user can log in. Invalid credentials are rejected. & Passed \\
+        UF-02 & A logged-in user can create, view, update, and delete clients and companies. & Passed \\
+        UF-03 & A user creates a detailed invoice with multiple items and taxes. The total is calculated correctly. & Passed \\
+        UF-04 & A user sends "create an invoice for ClientX for 500" on Telegram. A draft invoice is created for ClientX with a total of 500. & Passed \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \chapter{General Conclusion}
-% Aim for 2-3 pages.
 \section{Project Summary}
-% Summarize what you did and how it met the objectives.
+This project, named \textbf{Dalanda}, successfully achieved its primary objective: to design and develop a modern, accessible, and efficient invoice management solution tailored for small and medium-sized enterprises (SMEs) and freelancers. The project delivered a complete system composed of a secure Spring Boot backend, an intuitive Angular web interface, and an innovative conversational assistant on Telegram, all orchestrated through an n8n workflow.
+
+The solution addresses the key problems identified in the project's context, offering a powerful alternative to manual, error-prone invoicing methods and overly complex or expensive off-the-shelf software. By integrating with a popular messaging platform like Telegram, the project pioneers a more fluid and immediate user experience, reducing administrative friction and context switching for users.
+
 \section{Project Contributions}
 \subsection{Technical and Professional Contributions}
-% What did you learn? (Spring, Angular, n8n, AI, Docker, etc.)
-\subsection{Personal Contributions}
-% Soft skills: autonomy, problem-solving, project management.
-\section{Limitations and Future Prospects}
-The Dalanda solution is functional, but can be extended:
+This project provided an opportunity to work with a wide range of modern technologies and architectural patterns. Key technical skills gained and applied include:
 \begin{itemize}
-    \item \textbf{Immediate Improvements:} Currency management, customizable PDF templates.
-    \item \textbf{Future Evolutions:} A dashboard with statistics (revenue, unpaid invoices), integration with payment systems, extension to other messaging platforms (WhatsApp, Slack).
+    \item \textbf{Backend Development:} Deepened expertise in the Spring ecosystem, including Spring Boot, Spring Data JPA for database interactions, and Spring Security for implementing robust, token-based (JWT) authentication.
+    \item \textbf{Frontend Development:} Gained proficiency in Angular for building a reactive, single-page application (SPA). This included mastering component-based architecture, reactive forms for complex data entry, and service-based communication with a REST API.
+    \item \textbf{DevOps and Deployment:} Acquired hands-on experience with Docker and Docker Compose for containerizing the application and its database, ensuring a consistent and reproducible deployment environment.
+    \item \textbf{Integration and AI:} Explored the power of low-code automation with n8n and integrated a cutting-edge AI service (OpenAI) to build a practical, natural language-powered conversational interface.
+\end{itemize}
+
+\subsection{Personal Contributions}
+Beyond the technical aspects, this project was a significant learning experience in terms of soft skills:
+\begin{itemize}
+    \item \textbf{Project Management:} Followed the Scrum methodology, participating in sprint planning, execution, and review. This improved skills in time management, task prioritization, and iterative development.
+    \item \textbf{Problem-Solving:} Faced and overcame numerous technical challenges, from configuring complex security rules to debugging intricate integration workflows, thereby strengthening analytical and problem-solving abilities.
+    \item \textbf{Autonomy and Initiative:} Drove the project from conception to completion, making key architectural decisions and independently researching solutions to technical hurdles.
+\end{itemize}
+
+\section{Limitations and Future Prospects}
+While the Dalanda solution is fully functional and meets its core objectives, there are several avenues for future improvement and expansion:
+
+\begin{itemize}
+    \item \textbf{Immediate Improvements:}
+    \begin{itemize}
+        \item \textbf{Multi-Currency Support:} Add the ability to create invoices in different currencies.
+        \item \textbf{Customizable PDF Templates:} Allow users to choose from several PDF templates or customize them with their own branding.
+        \item \textbf{Dashboard and Analytics:} Implement a dashboard with key metrics like total revenue, outstanding payments, and revenue per client.
+    \end{itemize}
+    \item \textbf{Future Evolutions:}
+    \begin{itemize}
+        \item \textbf{Payment Gateway Integration:} Integrate with payment gateways like Stripe or PayPal to allow clients to pay invoices directly online.
+        \item \textbf{Recurring Invoices:} Add a feature to automatically generate and send invoices on a recurring schedule for subscription-based services.
+        \item \textbf{Expansion to Other Platforms:} Adapt the conversational assistant to work with other messaging platforms like WhatsApp or Slack to reach a wider user base.
+    \end{itemize}
 \end{itemize}
 
 %----------------------------------------------------------------------------------------
