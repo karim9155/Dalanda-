@@ -70,53 +70,36 @@
 %	TITLE PAGE
 %----------------------------------------------------------------------------------------
 
-\begin{titlepage}
-\centering
 
-% UPPER PART OF THE PAGE
-\includegraphics[width=0.4\textwidth]{path/to/your/school_logo.png}\\[1.5cm] % Replace with your school logo path
-{\Large \bfseries GRADUATE SCHOOL / UNIVERSITY}\\[0.5cm] % Replace with your school name
-{\large Specialization: Software Engineering}\\[2.0cm] % Replace with your specialty
 
-% TITLE
-{\huge \bfseries Final Year Project}\\[1.5cm]
-{\LARGE \bfseries Design and Implementation of an Invoice Management System with a Conversational Assistant via Telegram}\\[2.5cm] % Your project title
+% path to your images folder
+\graphicspath{{images/}}
 
-% AUTHOR AND SUPERVISORS
-\begin{minipage}{0.4\textwidth}
-\begin{flushleft} \large
-\emph{Realized by:}\\
-Your Name Here % Your Name
-\end{flushleft}
-\end{minipage}
-\begin{minipage}{0.4\textwidth}
-\begin{flushright} \large
-\emph{Supervisors:}\\
-Mr. Academic Supervisor Name (ESPRIT) \\ % Replace with names
-Mr. Company Supervisor Name (Company)
-\end{flushright}
-\end{minipage}
+\begin{figure}[H]
+  \centering
+\includegraphics[width=\paperwidth,height=\paperheight,trim=1cm 2cm 0cm 1cm,clip]{Page Garde Rapport Stage Ang_page-0001.jpg}
 
-\vfill % Fills the vertical space
+\end{figure}
+\newpage
 
-% LOWER PART OF THE PAGE
-{\large Academic Year 2024 - 2025}\\[1cm]
-\includegraphics[width=0.3\textwidth]{path/to/your/company_logo.png} % Replace with your company logo path
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\paperwidth,height=\paperheight]{Page Garde Rapport Stage Ang_page-0002.jpg}
+\end{figure}
+\newpage
 
-\end{titlepage}
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\paperwidth,height=\paperheight]{Page Garde Rapport Stage Ang_page-0003.jpg}
+\end{figure}
+\newpage
+
 
 %----------------------------------------------------------------------------------------
 %	FRONT MATTER
 %----------------------------------------------------------------------------------------
 
 \frontmatter % Roman numerals for page numbers
-
-\chapter*{Dedications}
-\vspace*{10cm} % Add vertical space
-\begin{flushright}
-    \textit{To my family, my friends...} % Your dedication text
-\end{flushright}
-\newpage
 
 \chapter*{Acknowledgements}
 I want to express my deep gratitude to... % Your acknowledgements text
@@ -193,12 +176,30 @@ This report is structured into five chapters. The first chapter presents the gen
 \chapter{Context, State of the Art and Needs Analysis}
 % Aim for 8-12 pages. This is a key academic chapter.
 \section{Introduction}
-% Briefly introduce the chapter's goals: setting the scene, analyzing what exists, and defining what needs to be built.
+This chapter lays the foundational context for the Dalanda project. It begins by presenting the host organization, Switzerland Innovation & Co., to situate the project within a real-world business environment. Following this, a detailed state-of-the-art analysis is conducted, examining existing invoicing solutions to identify market gaps and technological trends. This analysis justifies the key technology choices made for the project. Finally, the chapter concludes with a formal specification of the functional and non-functional requirements, which define the precise scope and objectives of the solution to be built.
 \section{Presentation of the Host Organization}
 \subsection{History and Activities}
-% Describe the company where you did your internship
+The internship was conducted at \textbf{Switzerland Innovation \& Co.}, a company specializing in IT, artificial intelligence, marketing, and customer service outsourcing for businesses in French-speaking Switzerland. While the company's detailed history is not public, it operates internationally with offices in Geneva, Tunis, and Marrakech, leveraging a diverse talent pool skilled in new technologies and innovative marketing.
+
+The company's services are structured around four main areas:
+\begin{itemize}
+    \item \textbf{Marketing Services:} Development of marketing strategies, branding, community management, and digital advertising campaigns.
+    \item \textbf{Web Marketing \& IT:} Creation of modern websites, integration of custom IT solutions, and CRM development.
+    \item \textbf{Artificial Intelligence:} Consulting on AI integration, design and deployment of AI applications, and team training.
+    \item \textbf{Customer Service Outsourcing:} Provision of call center teams and complete customer service operations.
+\end{itemize}
+
+Switzerland Innovation \& Co. positions itself as a trusted partner for outsourcing, emphasizing its deep understanding of the Swiss Romande market, responsiveness, and a commitment to innovation, particularly through the integration of cutting-edge technologies like AI.
+
 \subsection{Project Positioning}
-% Explain how your project fits into the company's goals. Was it an internal need? A proof of concept for future clients?
+The \textbf{Dalanda} project aligns perfectly with the company's core mission to "foster innovation by integrating cutting-edge technologies" and to "design and deploy high-impact AI solutions." This project serves a dual purpose:
+
+\begin{enumerate}
+    \item \textbf{Internal Need:} The project addresses an internal need for a modern, efficient, and cost-effective invoice management tool. By developing this solution in-house, the company can streamline its own billing processes, reducing administrative overhead and improving cash flow management.
+    \item \textbf{Proof of Concept:} The Dalanda project also acts as a powerful proof of concept for clients. It demonstrates the company's ability to develop and integrate sophisticated, AI-driven applications that solve real-world business problems. The conversational assistant, in particular, showcases the company's expertise in AI and its potential to create intuitive and user-friendly solutions.
+\end{enumerate}
+
+Ultimately, the project supports the company's overarching goal of helping businesses optimize their processes and reduce costs by outsourcing non-core tasks. It serves as a tangible example of the innovative solutions that Switzerland Innovation \& Co. can offer its clients.
 \section{State of the Art}
 \subsection{Comparative Analysis of Invoicing Systems}
 % This is a major section. Create a table comparing 3-4 existing solutions (e.g., Zoho Invoice, FreshBooks, Wave).
@@ -218,16 +219,43 @@ This report is structured into five chapters. The first chapter presents the gen
         \bottomrule
     \end{tabular}
 \end{table}
-% After the table, write a paragraph analyzing the results and identifying the gap your project fills.
+The analysis of existing solutions reveals a clear market segmentation. On one hand, solutions like Zoho Invoice and FreshBooks offer comprehensive feature sets but come with subscription costs that can be a barrier for freelancers or very small businesses. On the other hand, free solutions like Wave are attractive but often have limitations, such as a less developed API or basic automation capabilities.
+
+The Dalanda project positions itself in a strategic gap: it offers the richness of a complete, modern web application combined with an innovative, mobile-first interaction model via a conversational assistant, without the direct cost of a subscription. This hybrid approach, which combines a traditional web interface for complex tasks with the immediacy of a chatbot for quick actions, is a key differentiator. It directly addresses the need for a solution that is both powerful and accessible, and that integrates naturally into the user's daily communication workflow.
 \subsection{Study of Key Technologies}
 \subsubsection{Backend Architecture: The choice of Spring Boot}
-% Justify your choice. Talk about the Spring ecosystem (Data JPA, Security), performance, scalability, and why it's suited for enterprise-level applications.
+Spring Boot was chosen as the backend framework for its robustness, scalability, and extensive ecosystem, making it ideal for enterprise-level applications. Its key advantages for this project include:
+\begin{itemize}
+    \item \textbf{Rapid Development:} Spring Boot's convention-over-configuration approach and embedded servers (like Tomcat) significantly accelerate development and simplify deployment.
+    \item \textbf{Rich Ecosystem:} The project leverages several components of the Spring ecosystem:
+    \begin{itemize}
+        \item \textbf{Spring Data JPA:} Simplifies data access by providing a repository abstraction layer, reducing boilerplate code for database operations.
+        \item \textbf{Spring Security:} Provides a comprehensive and highly customizable security framework, which was essential for implementing the JWT-based authentication and protecting the REST API.
+    \end{itemize}
+    \item \textbf{Scalability and Performance:} Spring Boot is designed for building high-performance, scalable applications, which is crucial for a service that could potentially handle a large number of users and transactions.
+\end{itemize}
+
 \subsubsection{Frontend Architecture: The choice of Angular}
-% Justify your choice. Discuss its component-based architecture, TypeScript for type safety, powerful CLI, and the benefits of Angular Material for UI consistency.
+Angular was selected for the frontend to create a modern, responsive, and maintainable single-page application (SPA). Its main strengths in the context of this project are:
+\begin{itemize}
+    \item \textbf{Component-Based Architecture:} Promotes a modular and reusable code structure, which simplifies development and maintenance.
+    \item \textbf{TypeScript:} The use of TypeScript brings type safety to the frontend, which helps to catch errors early and improves code quality.
+    \item \textbf{Powerful CLI:} The Angular CLI automates many development tasks, such as creating components, services, and modules, which boosts productivity.
+    \item \textbf{Angular Material:} The integration of Angular Material provides a rich library of high-quality, pre-built UI components, ensuring a consistent and professional user interface.
+\end{itemize}
+
 \subsubsection{Automation and Integration: The power of n8n}
-% Explain what n8n is (workflow automation tool). Why did you choose it over alternatives like Zapier or writing a custom bot from scratch? (e.g., open-source, self-hostable, visual interface).
+n8n was chosen as the workflow automation tool to orchestrate the logic of the Telegram assistant. Its key benefits over alternatives like Zapier or writing a custom bot from scratch are:
+\begin{itemize}
+    \item \textbf{Open-Source and Self-Hostable:} This provides complete control over the tool and its data, which is a significant advantage for security and customization.
+    \item \textbf{Visual Interface:} n8n's node-based visual editor makes it easy to design, debug, and modify complex workflows without writing extensive code.
+    \item \textbf{Flexibility:} It offers a wide range of integrations and the ability to write custom JavaScript code within nodes, providing the flexibility needed to connect Telegram, the AI service, and the backend API.
+\end{itemize}
+
 \subsubsection{Conversational Interfaces and AI}
-% Discuss the paradigm of conversational UI. Explain the role of NLP/NLU. Briefly mention Large Language Models (LLMs) like GPT-4 and their ability to parse unstructured text into structured data (JSON), which is central to your project.
+The integration of a conversational assistant represents a shift towards a more intuitive and accessible user experience. This paradigm, known as Conversational UI, allows users to interact with software using natural language, which lowers the barrier to entry and makes the application more accessible, especially on mobile devices.
+
+The core of this interface is the use of a Large Language Model (LLM) for Natural Language Processing (NLP). The LLM's ability to understand unstructured text and extract structured data (in this case, a JSON object representing the user's intent and entities) is what makes the conversational assistant possible. This approach is more powerful than traditional, rule-based chatbots, as it can handle a wider range of user inputs and is more resilient to variations in language. The project leverages this capability to parse commands like "create an invoice for client X" into a structured API call, seamlessly bridging the gap between human language and machine execution.
 \section{Analysis and Specification of Needs}
 % This section formally defines the requirements derived from your state-of-the-art analysis.
 \subsection{Functional Requirements (User Stories)}
@@ -243,16 +271,21 @@ This report is structured into five chapters. The first chapter presents the gen
         UF-02 & As a user, I want to create, view, modify and delete customers and companies. \\
         UF-03 & As a user, I want to create a detailed invoice (multiple items, taxes, dates). \\
         UF-04 & As a user, I want to be able to tell my Telegram bot "create an invoice" to initiate the creation process. \\
+        UF-05 & As a user, I want to be able to upload a logo and a stamp for my company to personalize my invoices. \\
+        UF-06 & As a user, I want to be able to download a PDF version of any invoice. \\
+        UF-07 & As a user, I want to see a list of all my invoices with their status (e.g., paid, pending). \\
         \bottomrule
     \end{tabular}
 \end{table}
 \subsection{Non-Functional Requirements}
 % Detail these requirements.
 \begin{itemize}
-    \item \textbf{Security:} Use of HTTPS, hashed passwords (BCrypt), protection against XSS and CSRF attacks.
-    \item \textbf{Performance:} API response time of less than 200ms for CRUD requests.
-    \item \textbf{Reliability:} Service availability of 99.9\%.
-    \item \textbf{Maintainability:} Modular, commented code that respects the best practices of each framework.
+    \item \textbf{Security:} Use of HTTPS for all communications. Passwords must be hashed using BCrypt. The application must be protected against common web vulnerabilities, including XSS and CSRF attacks. API endpoints must be secured, and access should be restricted based on user roles.
+    \item \textbf{Performance:} The REST API should have an average response time of less than 200ms for standard CRUD operations under normal load. The web interface should load in under 3 seconds.
+    \item \textbf{Reliability:} The application should have a target availability of 99.9\%. All critical functionalities, such as invoice creation and PDF generation, must be thoroughly tested to prevent failures.
+    \item \textbf{Scalability:} The architecture should be able to handle a growing number of users and data without a significant degradation in performance. The use of a stateless backend and a scalable database is key to achieving this.
+    \item \textbf{Maintainability:} The code must be modular, well-documented, and follow the best practices of the respective frameworks (Spring Boot and Angular). This will facilitate future updates and the addition of new features.
+    \item \textbf{Usability:} The web interface should be intuitive and easy to use, requiring minimal training for a new user. The conversational assistant should be able to understand common variations of commands.
 \end{itemize}
 
 \chapter{Solution Design and Architecture}
