@@ -1,0 +1,57 @@
+<div *ngIf="stats">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Invoices by Status</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ngx-charts-pie-chart
+        [view]="view"
+        [results]="stats.invoicesByStatus"
+        [gradient]="gradient"
+        [legend]="showLegend"
+        [labels]="showLabels"
+        [doughnut]="isDoughnut">
+      </ngx-charts-pie-chart>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Monthly Sales</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ngx-charts-line-chart
+        [view]="view"
+        [results]="stats.monthlySales"
+        [gradient]="gradient"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="showLegend"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        xAxisLabel="Month"
+        yAxisLabel="Sales">
+      </ngx-charts-line-chart>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Top Clients</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ngx-charts-bar-vertical
+        [view]="view"
+        [results]="stats.topClients"
+        [gradient]="gradient"
+        [xAxis]="true"
+        [yAxis]="true"
+        [legend]="showLegend"
+        [showXAxisLabel]="true"
+        [showYAxisLabel]="true"
+        xAxisLabel="Client"
+        yAxisLabel="Revenue">
+      </ngx-charts-bar-vertical>
+    </mat-card-content>
+  </mat-card>
+</div>

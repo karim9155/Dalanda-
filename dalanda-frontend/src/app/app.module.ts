@@ -36,6 +36,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
 import { GcrsFormComponent } from './gcrs-form/gcrs-form.component';
 import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
+import {StatisticsComponent} from './statistics/statistics.component';
+import {BarChartModule, LineChartModule, PieChartModule} from '@swimlane/ngx-charts';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
@@ -51,6 +53,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     PdfPreviewDialogComponent,
     FieldManagerDialogComponent,
     ConfirmationDialogComponent,
+    StatisticsComponent
   ],
   imports: [
     BrowserModule,
@@ -93,6 +96,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     TranslateModule,
     MatRadioGroup,
     MatRadioButton,
+    BarChartModule,
+    LineChartModule,
+    PieChartModule,
 
 
   ],
