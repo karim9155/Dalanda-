@@ -14,6 +14,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{graphicx}
+\usepackage{pdfpages}
+\usepackage{grffile}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage[english]{babel} % For English typography rules
 \usepackage{hyperref}
@@ -30,7 +32,6 @@
 \usepackage{listings} % For code snippets
 \usepackage{xcolor}   % For custom colors in code
 \usepackage{booktabs} % For professional quality tables
-\usepackage{float}    % To improve figure placement with [H]
 
 % Define custom colors for code listings
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -75,24 +76,19 @@
 % path to your images folder
 \graphicspath{{images/}}
 
-\begin{figure}[H]
-  \centering
-\includegraphics[width=\paperwidth,height=\paperheight,trim=1cm 2cm 0cm 1cm,clip]{Page Garde Rapport Stage Ang_page-0001.jpg}
+\newgeometry{margin=0pt}
+\includepdf[pages=-]{Page Garde Rapport Stage Ang_page-0002.jpg}
+\restoregeometry
+\clearpage
+\newgeometry{margin=0pt}
+\includepdf[pages=-]{Page Garde Rapport Stage Ang_page-0003.jpg}
+\restoregeometry
+\clearpage
+\newgeometry{margin=0pt}
+\includepdf[pages=-]{Page Garde Rapport Stage Ang_page-0001.jpg}
+\restoregeometry
+\clearpage
 
-\end{figure}
-\newpage
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\paperwidth,height=\paperheight]{Page Garde Rapport Stage Ang_page-0002.jpg}
-\end{figure}
-\newpage
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\paperwidth,height=\paperheight]{Page Garde Rapport Stage Ang_page-0003.jpg}
-\end{figure}
-\newpage
 
 
 %----------------------------------------------------------------------------------------
