@@ -8,6 +8,9 @@ import com.example.dalanda.ServicesImp.TaxStrategyFactory;
 import com.example.dalanda.ServicesImp.PdfGeneratorFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Arrays; // For logging byte array content/length
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -17,6 +20,8 @@ import java.util.UUID;
 @Service
 @Transactional
 public class InvoiceServiceImpl implements InvoiceService {
+    private static final Logger log = LoggerFactory.getLogger(InvoiceServiceImpl.class);
+
     private final InvoiceRepository invoiceRepo;
     private final CompanyRepository companyRepo;
     private final ClientRepository clientRepo;
@@ -40,14 +45,59 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public Invoice createInvoice(Invoice invoice) {
-        Company company = companyRepo.findById(invoice.getCompany().getId())
-                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+        log.info("InvoiceService.createInvoice called. Processing company details...");
+        if (invoice.getCompany() != null) {
+            log.info("Company Name from payload: {}", invoice.getCompany().getCompanyName());
+            log.info("Company ID from payload: {}", invoice.getCompany().getId());
+            byte[] logoBytesService = invoice.getCompany().getLogo();
+            byte[] stampBytesService = invoice.getCompany().getStampSignature();
+            log.info("Company Logo in service (pre-save): {} (Size: {} bytes)", logoBytesService != null ? "Present" : "NULL", logoBytesService != null ? logoBytesService.length : 0);
+            log.info("Company Stamp in service (pre-save): {} (Size: {} bytes)", stampBytesService != null ? "Present" : "NULL", stampBytesService != null ? stampBytesService.length : 0);
+        } else {
+            log.warn("Company details are NULL in InvoiceService.createInvoice payload.");
+            // This case should ideally be caught by the controller or previous checks,
+            // but good to log if it reaches here.
+        }
+
+        Company companyToSaveOrFetch;
+        if (invoice.getCompany() != null && invoice.getCompany().getId() == null) {
+            Company newCompany = invoice.getCompany();
+            if (newCompany.getCompanyName() == null || newCompany.getCompanyName().trim().isEmpty()) {
+                log.error("Attempted to create a new company with an empty name.");
+                throw new IllegalArgumentException("Company name is required for a new company.");
+            }
+            log.info("Attempting to save new company: {}", newCompany.getCompanyName());
+            byte[] logoBytesForSave = newCompany.getLogo();
+            byte[] stampBytesForSave = newCompany.getStampSignature();
+            log.info("Logo for new company (before save): {} (Size: {} bytes)", logoBytesForSave != null ? "Present" : "NULL", logoBytesForSave != null ? logoBytesForSave.length : 0);
+            log.info("Stamp for new company (before save): {} (Size: {} bytes)", stampBytesForSave != null ? "Present" : "NULL", stampBytesForSave != null ? stampBytesForSave.length : 0);
+
+            companyToSaveOrFetch = companyRepo.save(newCompany);
+            log.info("Saved new company. ID: {}, Name: {}", companyToSaveOrFetch.getId(), companyToSaveOrFetch.getCompanyName());
+            byte[] logoBytesAfterSave = companyToSaveOrFetch.getLogo();
+            byte[] stampBytesAfterSave = companyToSaveOrFetch.getStampSignature();
+            log.info("Logo for new company (after save from returned entity): {} (Size: {} bytes)", logoBytesAfterSave != null ? "Present" : "NULL", logoBytesAfterSave != null ? logoBytesAfterSave.length : 0);
+            log.info("Stamp for new company (after save from returned entity): {} (Size: {} bytes)", stampBytesAfterSave != null ? "Present" : "NULL", stampBytesAfterSave != null ? stampBytesAfterSave.length : 0);
+
+        } else if (invoice.getCompany() != null && invoice.getCompany().getId() != null) {
+            log.info("Fetching existing company with ID: {}", invoice.getCompany().getId());
+            companyToSaveOrFetch = companyRepo.findById(invoice.getCompany().getId())
+                    .orElseThrow(() -> {
+                        log.error("Company not found with ID: {}", invoice.getCompany().getId());
+                        return new IllegalArgumentException("Company not found with ID: " + invoice.getCompany().getId());
+                    });
+            log.info("Fetched existing company: {}", companyToSaveOrFetch.getCompanyName());
+        } else {
+            log.error("Company information is missing or malformed in the invoice for InvoiceService.");
+            throw new IllegalArgumentException("Company information is missing in the invoice.");
+        }
+
         Client client = clientRepo.findById(invoice.getClient().getId())
                 .orElseThrow(() -> new IllegalArgumentException("Client not found"));
         User creator = userRepo.findById(invoice.getCreatedBy().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        invoice.setCompany(company);
+        invoice.setCompany(companyToSaveOrFetch);
         invoice.setClient(client);
         invoice.setCreatedBy(creator);
 

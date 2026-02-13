@@ -67,5 +67,9 @@ public class Invoice {
     @Column(name = "tax_option")
     private Set<TaxOption> taxOptions = new HashSet<>();
 
-    // getters + setters
+    @Column(name = "declaration")
+    @org.hibernate.annotations.ColumnDefault("0")
+    private Integer declaration = 0;
+
+    // getters + setters are handled by Lombok
 }

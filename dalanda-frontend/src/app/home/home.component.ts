@@ -9,6 +9,9 @@ import {FullInvoicePayload} from '../models/full-invoice-payload';
 import {MatSelectChange} from '@angular/material/select'; // Import MatSelectChange
 import { MatDialog } from '@angular/material/dialog';
 import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
+import { MatSlideToggleChange } from '@angular/material/slide-toggle';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -25,8 +28,11 @@ export class HomeComponent implements OnInit{
     private invoiceService: InvoiceService,
     private router: Router,
     private snackBar: MatSnackBar, // Inject MatSnackBar
-    private dialog: MatDialog // Inject MatDialog
-  ) {}
+    private dialog: MatDialog, // Inject MatDialog
+    private translate: TranslateService
+  ) {
+    translate.setDefaultLang('en');
+  }
   ngOnInit() {
     // read the real user id that you stored on login
     const uuid = localStorage.getItem('userUuid');
@@ -61,6 +67,10 @@ export class HomeComponent implements OnInit{
     } else {
       this.router.navigate(['/invoice-form']);
     }
+  }
+
+  navigateToGCRSForm(): void {
+    this.router.navigate(['/gcrs']);
   }
 
   logout() {
@@ -138,6 +148,41 @@ export class HomeComponent implements OnInit{
     });
   }
 
+  toggleDeclaration(invoice: Invoice, event: MatSlideToggleChange): void {
+    // The slide toggle has already visually changed its state due to user interaction.
+    // `event.checked` reflects the new state (true if toggled on, false if off).
+    const intendedDeclarationStatus = event.checked ? 1 : 0;
+
+    // Temporarily update local data for optimistic UI update.
+    // This is optional but provides better UX.
+    const originalDeclaration = invoice.declaration;
+    invoice.declaration = intendedDeclarationStatus;
+
+    this.invoiceService.toggleInvoiceDeclaration(invoice.id).subscribe({
+      next: (updatedInvoice) => {
+        // Backend confirmed the change, update local data with the authoritative response.
+        const index = this.invoices.findIndex(inv => inv.id === updatedInvoice.id);
+        if (index !== -1) {
+          this.invoices[index] = updatedInvoice;
+          // Ensure the view updates if OnPush change detection is used
+          this.invoices = [...this.invoices];
+        }
+        this.snackBar.open(`Invoice ${updatedInvoice.invoiceNumber} marked as ${updatedInvoice.declaration === 1 ? 'Declared' : 'Not Declared'}.`, 'Close', { duration: 3000 });
+      },
+      error: (err) => {
+        console.error('Error toggling invoice declaration', err);
+        // Revert the optimistic update on error.
+        const index = this.invoices.findIndex(inv => inv.id === invoice.id);
+        if (index !== -1) {
+          this.invoices[index].declaration = originalDeclaration; // Revert to original state
+          // Force view update
+          this.invoices = [...this.invoices];
+        }
+        this.snackBar.open('Failed to update declaration status. Please try again.', 'Error', { duration: 3000 });
+      }
+    });
+  }
+
   openPdfPreview(invoice: Invoice, event: MouseEvent): void {
     event.stopPropagation(); // Prevent card click event from firing
 
@@ -172,5 +217,33 @@ export class HomeComponent implements OnInit{
         this.snackBar.open('Failed to load PDF for preview. Please try again.', 'Error', { duration: 3000 });
       }
     });
+  }
+
+  deleteInvoice(invoiceId: number, event: MouseEvent): void {
+    event.stopPropagation();
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '350px',
+      data: { title: 'Confirm Deletion', message: 'Are you sure you want to delete this invoice?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.invoiceService.deleteInvoice(invoiceId).subscribe({
+          next: () => {
+            this.invoices = this.invoices.filter(inv => inv.id !== invoiceId);
+            this.snackBar.open('Invoice deleted successfully', 'Close', { duration: 3000 });
+          },
+          error: err => {
+            console.error('Error deleting invoice', err);
+            this.snackBar.open('Failed to delete invoice. Please try again.', 'Error', { duration: 3000 });
+          }
+        });
+      }
+    });
+  }
+
+  switchLanguage(language: string) {
+    this.translate.use(language);
   }
 }

@@ -8,6 +8,8 @@ import {
 } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { PdfPreviewDialogComponent, PdfPreviewDialogData } from '../pdf-preview-dialog/pdf-preview-dialog.component';
 
 import { InvoiceService } from '../services/invoice.service';
 import { ClientService } from '../services/client.service';
@@ -16,8 +18,9 @@ import { CompanyService } from '../services/company.service';
 import { Client, Company, Invoice } from '../models/invoice';
 import { TaxOption } from '../models/tax-option';
 import { FullInvoicePayload } from '../models/full-invoice-payload';
-import { of, forkJoin, Observable } from 'rxjs';
+import { of, forkJoin, Observable, from } from 'rxjs';
 import { switchMap, map, catchError, finalize } from 'rxjs/operators';
+import { FieldManagerDialogComponent, FieldManagerDialogData } from '../field-manager-dialog/field-manager-dialog.component';
 
 @Component({
   selector: 'app-invoice-form',
@@ -52,6 +55,20 @@ export class InvoiceFormComponent implements OnInit {
   // Error handling
   error: string | null = null;
 
+  // File handling for company logo and stamp
+  selectedLogoFile: File | null = null;
+  logoPreviewUrl: string | ArrayBuffer | null = null;
+  selectedStampFile: File | null = null;
+  stampPreviewUrl: string | ArrayBuffer | null = null;
+
+  // State for new client's custom/disabled fields
+  newClientCustomFields: { [key: string]: string } = {};
+  newClientDisabledFields: string[] = [];
+
+  // State for new company's custom/disabled fields
+  newCompanyCustomFields: { [key: string]: string } = {};
+  newCompanyDisabledFields: string[] = [];
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -59,7 +76,8 @@ export class InvoiceFormComponent implements OnInit {
     private snackBar: MatSnackBar,
     private invoiceService: InvoiceService,
     private clientService: ClientService,
-    private companyService: CompanyService
+    private companyService: CompanyService,
+    private dialog: MatDialog // Inject MatDialog
   ) {
     this.invoiceForm = this.createForm();
   }
@@ -82,11 +100,24 @@ export class InvoiceFormComponent implements OnInit {
   private createForm(): FormGroup {
     return this.fb.group({
       clientId: [null],
-      newClientName: [''],
-      newClientOtherInfo: [''],
+      // New Client Fields
+      newClientName: [''], // This is companyName for the Client
+      newClientContactName: [''],
+      newClientEmail: ['', [Validators.email]],
+      newClientPhoneNumber: [''],
+      newClientRib: [''],
+      newClientFiscalMatricule: [''],
+      newClientAddress: [''],
+      // We'll handle customFields and disabledFields in a later step
 
       companyId: [null],
+      // New Company Fields
       newCompanyName: [''],
+      newCompanyEmail: ['', [Validators.email]],
+      newCompanyPhoneNumber: [''],
+      newCompanyRib: [''],
+      newCompanyFiscalMatricule: [''],
+      newCompanyAddress: [''],
 
       invoiceNumber: ['', [Validators.required, Validators.pattern(/^[A-Z0-9-]+$/)]],
       date: [new Date().toISOString().split('T')[0], Validators.required],
@@ -212,35 +243,64 @@ export class InvoiceFormComponent implements OnInit {
     if (this.useExistingClient) {
       this.invoiceForm.patchValue({
         newClientName: '',
-        newClientOtherInfo: ''
+        newClientContactName: '',
+        newClientEmail: '',
+        newClientPhoneNumber: '',
+        newClientRib: '',
+        newClientFiscalMatricule: '',
+        newClientAddress: ''
       });
       this.invoiceForm.get('clientId')?.setValidators([Validators.required]);
       this.invoiceForm.get('newClientName')?.clearValidators();
+      this.invoiceForm.get('newClientEmail')?.clearValidators();
+      // Clear validators for other new fields if they had any
     } else {
       this.invoiceForm.get('clientId')?.setValue(null);
       this.invoiceForm.get('clientId')?.clearValidators();
       this.invoiceForm.get('newClientName')?.setValidators([Validators.required, Validators.minLength(2)]);
+      this.invoiceForm.get('newClientEmail')?.setValidators([Validators.email]); // Keep email validation
+      // Set validators for other new fields if needed
     }
 
     this.invoiceForm.get('clientId')?.updateValueAndValidity();
     this.invoiceForm.get('newClientName')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientContactName')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientEmail')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientPhoneNumber')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientRib')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientFiscalMatricule')?.updateValueAndValidity();
+    this.invoiceForm.get('newClientAddress')?.updateValueAndValidity();
   }
 
   toggleCompanyMode(): void {
     this.useExistingCompany = !this.useExistingCompany;
 
     if (this.useExistingCompany) {
-      this.invoiceForm.get('newCompanyName')?.setValue('');
+      this.invoiceForm.patchValue({
+        newCompanyName: '',
+        newCompanyEmail: '',
+        newCompanyPhoneNumber: '',
+        newCompanyRib: '',
+        newCompanyFiscalMatricule: '',
+        newCompanyAddress: ''
+      });
       this.invoiceForm.get('companyId')?.setValidators([Validators.required]);
       this.invoiceForm.get('newCompanyName')?.clearValidators();
+      this.invoiceForm.get('newCompanyEmail')?.clearValidators();
     } else {
       this.invoiceForm.get('companyId')?.setValue(null);
       this.invoiceForm.get('companyId')?.clearValidators();
       this.invoiceForm.get('newCompanyName')?.setValidators([Validators.required, Validators.minLength(2)]);
+      this.invoiceForm.get('newCompanyEmail')?.setValidators([Validators.email]);
     }
 
     this.invoiceForm.get('companyId')?.updateValueAndValidity();
     this.invoiceForm.get('newCompanyName')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyEmail')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyPhoneNumber')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyRib')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyFiscalMatricule')?.updateValueAndValidity();
+    this.invoiceForm.get('newCompanyAddress')?.updateValueAndValidity();
   }
 
   private loadClients(): void {
@@ -335,6 +395,14 @@ export class InvoiceFormComponent implements OnInit {
     this.error = null;
 
     const fv = this.invoiceForm.value;
+    console.log('Invoice Form onSubmit triggered.');
+    console.log('Form Value:', fv);
+    console.log('Is Edit Mode:', this.isEditMode);
+    console.log('Invoice ID for edit:', this.invoiceId);
+    console.log('useExistingClient:', this.useExistingClient);
+    console.log('useExistingCompany:', this.useExistingCompany); // Very important
+    console.log('Selected Logo File:', this.selectedLogoFile);
+    console.log('Selected Stamp File:', this.selectedStampFile);
 
     // Prepare client and company observables
     const client$ = this.prepareClientObservable(fv);
@@ -372,25 +440,133 @@ export class InvoiceFormComponent implements OnInit {
 
   private prepareClientObservable(formValue: any): Observable<{ id: number }> {
     if (this.useExistingClient) {
-      return of({ id: formValue.clientId });
+      // Ensure clientId is a number. If it's coming from a form, it might be a string.
+      const clientId = typeof formValue.clientId === 'string' ? parseInt(formValue.clientId, 10) : formValue.clientId;
+      return of({ id: clientId });
     } else {
-      return this.clientService.create({
-        id: formValue.clientId,
+      // Construct the new client object with all fields
+      const newClient: Partial<Client> = { // Use Partial<Client> as id will be undefined
         companyName: formValue.newClientName,
-        otherInfo: formValue.newClientOtherInfo
-      }).pipe(map(c => ({ id: c.id })));
+        contactName: formValue.newClientContactName,
+        email: formValue.newClientEmail,
+        phoneNumber: formValue.newClientPhoneNumber,
+        rib: formValue.newClientRib,
+        fiscalMatricule: formValue.newClientFiscalMatricule,
+        address: formValue.newClientAddress,
+        // Add custom and disabled fields from component state
+        customFields: JSON.stringify(this.newClientCustomFields),
+        disabledFields: JSON.stringify(this.newClientDisabledFields)
+      };
+      return this.clientService.create(newClient as Client).pipe(map(c => ({ id: c.id })));
     }
   }
 
+  openClientFieldManager(): void {
+    const dialogData: FieldManagerDialogData = {
+      standardFields: [
+        'Contact Name',
+        'Email',
+        'Phone Number',
+        'RIB',
+        'Fiscal Matricule',
+        'Address'
+      ],
+      customFields: this.newClientCustomFields,
+      disabledFields: this.newClientDisabledFields
+    };
+
+    const dialogRef = this.dialog.open(FieldManagerDialogComponent, {
+      width: '700px',
+      autoFocus: false,
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.newClientCustomFields = result.customFields;
+        this.newClientDisabledFields = result.disabledFields;
+        this.showSnackBar('Client field settings have been updated.', 'success');
+      }
+    });
+  }
+
   private prepareCompanyObservable(formValue: any): Observable<{ id: number }> {
+    console.log('[prepareCompanyObservable] Called. useExistingCompany:', this.useExistingCompany);
+    console.log('[prepareCompanyObservable] formValue.companyId:', formValue.companyId);
+    console.log('[prepareCompanyObservable] formValue.newCompanyName:', formValue.newCompanyName);
+
     if (this.useExistingCompany) {
-      return of({ id: formValue.companyId });
+      console.log('[prepareCompanyObservable] Preparing EXISTING company with ID:', formValue.companyId);
+      const companyId = typeof formValue.companyId === 'string' ? parseInt(formValue.companyId, 10) : formValue.companyId;
+      return of({ id: companyId });
     } else {
-      return this.companyService.create({
-        id: formValue.companyId,
-        companyName: formValue.newCompanyName
-      }).pipe(map(c => ({ id: c.id })));
+      console.log('[prepareCompanyObservable] Preparing NEW company.');
+      // Prepare company data
+      const companyData: Partial<Company> = {
+        companyName: formValue.newCompanyName,
+        email: formValue.newCompanyEmail,
+        phoneNumber: formValue.newCompanyPhoneNumber,
+        rib: formValue.newCompanyRib,
+        fiscalMatricule: formValue.newCompanyFiscalMatricule,
+        address: formValue.newCompanyAddress,
+        customFields: JSON.stringify(this.newCompanyCustomFields),
+        disabledFields: JSON.stringify(this.newCompanyDisabledFields)
+      };
+
+      // Observables for file conversions
+      const logoObs = this.selectedLogoFile
+        ? from(this.getFileAsBase64(this.selectedLogoFile))
+        : of(null);
+      const stampObs = this.selectedStampFile
+        ? from(this.getFileAsBase64(this.selectedStampFile))
+        : of(null);
+
+      return forkJoin([logoObs, stampObs]).pipe(
+        switchMap(([logoBase64, stampBase64]) => {
+          if (logoBase64) {
+            companyData.logo = logoBase64;
+          }
+          if (stampBase64) {
+            companyData.stampSignature = stampBase64;
+          }
+          console.log('[prepareCompanyObservable] Company data for companyService.create:', companyData);
+          // The companyService.create method expects a Company-like object.
+          // We provide id as undefined or null for new company.
+          // The actual Company interface in models/invoice.ts includes `id: number`.
+          // We might need to adjust the type here or in the service if `id` is strictly required.
+          // For now, assuming companyService.create can handle `id` being absent or null for new entities.
+          return this.companyService.create(companyData as Company).pipe(map(c => ({ id: c.id, companyName: c.companyName, logo: c.logo, stampSignature: c.stampSignature })));
+        })
+      );
     }
+  }
+
+  openCompanyFieldManager(): void {
+    const dialogData: FieldManagerDialogData = {
+      standardFields: [
+        'Email',
+        'Phone Number',
+        'RIB',
+        'Fiscal Matricule',
+        'Address'
+      ],
+      customFields: this.newCompanyCustomFields,
+      disabledFields: this.newCompanyDisabledFields
+    };
+
+    const dialogRef = this.dialog.open(FieldManagerDialogComponent, {
+      width: '700px',
+      autoFocus: false,
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.newCompanyCustomFields = result.customFields;
+        this.newCompanyDisabledFields = result.disabledFields;
+        this.showSnackBar('Company field settings have been updated.', 'success');
+      }
+    });
   }
 
   private buildInvoicePayload(formValue: any, clientId: number, companyId: number): {
@@ -405,10 +581,11 @@ export class InvoiceFormComponent implements OnInit {
     taxOptions: string[];
     status: 'pending' | 'paid' | 'overdue' | 'draft'
   } {
+    console.log('[buildInvoicePayload] Called with clientId:', clientId, 'companyId:', companyId);
     const totalAmount = this.calculateTotal();
     const createdBy = { id: localStorage.getItem('userUuid')! };
 
-    return {
+    const payload = {
       invoiceNumber: formValue.invoiceNumber,
       date: formValue.date,
       dueDate: formValue.dueDate,
@@ -420,6 +597,8 @@ export class InvoiceFormComponent implements OnInit {
       taxOptions: formValue.taxOptions as string[],
       status: formValue.status // Add status to payload
     };
+    console.log('[buildInvoicePayload] Final payload being built:', payload);
+    return payload;
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
@@ -476,11 +655,42 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   previewInvoice(): void {
-    if (this.invoiceForm.valid) {
-      // Implement preview logic
-      this.showSnackBar('Preview functionality coming soon', 'info');
+    if (this.invoiceId !== null) {
+      // Existing invoice, proceed to fetch PDF
+      this.isLoading = true; // Optional: show a loading indicator
+      this.invoiceService.downloadPdf(this.invoiceId).subscribe({
+        next: (blob) => {
+          this.isLoading = false;
+          if (blob.size === 0) {
+            this.showSnackBar('No PDF available or PDF is empty.', 'error');
+            return;
+          }
+          const pdfUrl = URL.createObjectURL(blob);
+          const invoiceNumber = this.invoiceForm.get('invoiceNumber')?.value || 'invoice';
+          const dialogData: PdfPreviewDialogData = {
+            pdfUrl: pdfUrl,
+            pdfBlob: blob,
+            fileName: `${invoiceNumber}.pdf`
+          };
+
+          this.dialog.open(PdfPreviewDialogComponent, {
+            data: dialogData,
+            width: '90vw', // Or your preferred size, consistent with home page
+            height: '95vh',
+            maxWidth: '100vw',
+            maxHeight: '100vh',
+            panelClass: ['pdf-preview-dialog-panel', 'full-screen-dialog'] // Use classes from previous step if desired
+          });
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Error downloading PDF for preview:', err);
+          this.showSnackBar('Failed to load PDF for preview. Please try again.', 'error');
+        }
+      });
     } else {
-      this.showSnackBar('Please complete the form to preview', 'error');
+      // New invoice, not saved yet
+      this.showSnackBar('Please save the invoice first to enable preview.', 'info');
     }
   }
 
@@ -518,5 +728,102 @@ export class InvoiceFormComponent implements OnInit {
 
   trackByTaxOption(index: number, option: string): string {
     return option;
+  }
+
+  // File selection handlers
+  onLogoFileSelected(event: any): void { // Changed type to any to inspect event structure
+    console.log('[onLogoFileSelected] Event received:', event);
+    // ngx-mat-file-input might emit the File directly, or a FileList, or an object containing the file.
+    // Common pattern: if it's a single file component, event might be the File itself.
+    // Or if it behaves like a standard input, it might be event.target.files.
+    // Let's try to determine the structure.
+
+    let file: File | null = null;
+
+    if (event instanceof File) { // If the event itself is a File object
+      file = event;
+    } else if (event && event.target && event.target.files && event.target.files.length > 0) { // Standard HTML input behavior
+      file = event.target.files[0];
+    } else if (event && event.files && event.files.length > 0) { // Some custom components might use event.files
+      file = event.files[0];
+    } else if (Array.isArray(event) && event.length > 0 && event[0] instanceof File) { // If it emits an array of files
+      file = event[0];
+    }
+
+
+    if (file) {
+      this.selectedLogoFile = file;
+      console.log('[onLogoFileSelected] Selected logo file:', this.selectedLogoFile);
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = e => this.logoPreviewUrl = reader.result;
+      reader.readAsDataURL(this.selectedLogoFile);
+    } else {
+      this.selectedLogoFile = null;
+      this.logoPreviewUrl = null;
+      console.log('[onLogoFileSelected] No valid file found in event.');
+    }
+  }
+
+  clearLogoFile(event: MouseEvent): void {
+    event.stopPropagation(); // Prevent default behavior if any
+    this.selectedLogoFile = null;
+    this.logoPreviewUrl = null;
+    // For ngx-mat-file-input, you might need to reset the form control value if it's part of a reactive form
+    // Example: this.invoiceForm.get('yourLogoFormControlName')?.setValue(null);
+    // Or if the component has a clear() method, you might need a ViewChild to call it.
+    // For now, this just clears our internal state.
+    console.log('[clearLogoFile] Logo cleared.');
+  }
+
+  onStampFileSelected(event: any): void { // Changed type to any
+    console.log('[onStampFileSelected] Event received:', event);
+    let file: File | null = null;
+
+    if (event instanceof File) {
+      file = event;
+    } else if (event && event.target && event.target.files && event.target.files.length > 0) {
+      file = event.target.files[0];
+    } else if (event && event.files && event.files.length > 0) {
+      file = event.files[0];
+    } else if (Array.isArray(event) && event.length > 0 && event[0] instanceof File) {
+      file = event[0];
+    }
+
+    if (file) {
+      this.selectedStampFile = file;
+      console.log('[onStampFileSelected] Selected stamp file:', this.selectedStampFile);
+      // Generate preview
+      const reader = new FileReader();
+      reader.onload = e => this.stampPreviewUrl = reader.result;
+      reader.readAsDataURL(this.selectedStampFile);
+    } else {
+      this.selectedStampFile = null;
+      this.stampPreviewUrl = null;
+      console.log('[onStampFileSelected] No valid file found in event.');
+    }
+  }
+
+  clearStampFile(event: MouseEvent): void {
+    event.stopPropagation();
+    this.selectedStampFile = null;
+    this.stampPreviewUrl = null;
+    console.log('[clearStampFile] Stamp cleared.');
+    // Similar considerations for resetting ngx-mat-file-input value apply here.
+  }
+
+  // Helper to convert file to Base64
+  private async getFileAsBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // result is DataURL: "data:image/png;base64,iVBORw0KGg..."
+        // We need to strip the "data:image/png;base64," part
+        const base64String = (reader.result as string).split(',')[1];
+        resolve(base64String);
+      };
+      reader.onerror = error => reject(error);
+    });
   }
 }

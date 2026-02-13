@@ -19,13 +19,14 @@ public class InvoiceDTO {
     private List<InvoiceItemDTO> items;
     private Set<TaxOption> taxOptions; // Assuming TaxOption enum is safe to expose directly
     private String status;
+    private Integer declaration;
 
     // Constructors, Getters, Setters
     public InvoiceDTO() {}
 
     public InvoiceDTO(Long id, String invoiceNumber, LocalDate date, LocalDate dueDate,
                       BigDecimal totalAmount, CompanyDTO company, ClientDTO client,
-                      UserDTO createdBy, List<InvoiceItemDTO> items, Set<TaxOption> taxOptions, String status) {
+                      UserDTO createdBy, List<InvoiceItemDTO> items, Set<TaxOption> taxOptions, String status, Integer declaration) {
         this.id = id;
         this.invoiceNumber = invoiceNumber;
         this.date = date;
@@ -37,6 +38,7 @@ public class InvoiceDTO {
         this.items = items;
         this.taxOptions = taxOptions;
         this.status = status;
+        this.declaration = declaration;
     }
 
     public Long getId() { return id; }
@@ -61,4 +63,6 @@ public class InvoiceDTO {
     public void setTaxOptions(Set<TaxOption> taxOptions) { this.taxOptions = taxOptions; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
+    public Integer getDeclaration() { return declaration; }
+    public void setDeclaration(Integer declaration) { this.declaration = declaration; }
 }

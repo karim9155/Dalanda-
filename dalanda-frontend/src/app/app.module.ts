@@ -27,8 +27,21 @@ import { MatIcon }           from '@angular/material/icon';
 import {RegisterComponent} from './auth/register/register.component';
 import {LoginComponent} from './auth/login/login.component';
 import { PdfPreviewDialogComponent } from './pdf-preview-dialog/pdf-preview-dialog.component';
-import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
+import {MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle} from '@angular/material/dialog';
+import {MaterialFileInputModule} from 'ngx-custom-material-file-input';
+import { FieldManagerDialogComponent } from './field-manager-dialog/field-manager-dialog.component';
+import { ConfirmationDialogComponent } from './confirmation-dialog/confirmation-dialog.component';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { HttpClient } from '@angular/common/http';
+import { GcrsFormComponent } from './gcrs-form/gcrs-form.component';
+import {MatRadioButton, MatRadioGroup} from '@angular/material/radio';
+import {StatisticsComponent} from './statistics/statistics.component';
+import {BarChartModule, LineChartModule, PieChartModule} from '@swimlane/ngx-charts';
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 
 @NgModule({
   declarations: [
@@ -37,12 +50,22 @@ import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
     InvoiceFormComponent,
     LoginComponent,
     RegisterComponent,
-    PdfPreviewDialogComponent
+    PdfPreviewDialogComponent,
+    FieldManagerDialogComponent,
+    ConfirmationDialogComponent,
+    StatisticsComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    }),
     BrowserAnimationsModule,
     MaterialModule,
     AuthModule,
@@ -67,6 +90,17 @@ import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
     MatProgressSpinner,
     MatDialogContent,
     MatDialogActions,
+    MaterialFileInputModule,
+    MatDialogClose,
+    MatDialogTitle,
+    TranslateModule,
+    MatRadioGroup,
+    MatRadioButton,
+    BarChartModule,
+    LineChartModule,
+    PieChartModule,
+
+
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }

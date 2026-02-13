@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'invoices/new', component: InvoiceFormComponent, canActivate: [AuthGuardService] },
   { path: 'invoice-form', component: InvoiceFormComponent, canActivate: [AuthGuardService] },
   { path: 'invoice-form/:id', component: InvoiceFormComponent, canActivate: [AuthGuardService] },
+  { path: 'gcrs', loadChildren: () => import('./gcrs-form/gcrs.module').then(m => m.GcrsModule), canActivate: [AuthGuardService] },
   // Default & fallback
   { path: '',     redirectTo: 'login', pathMatch: 'full' },
   { path: '**',   redirectTo: 'login' }

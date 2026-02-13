@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {map, Observable, switchMap, tap} from 'rxjs';
+import {TokenService} from './token.service';
+import {InvoiceService} from './invoice.service';
+import {Router} from '@angular/router';
 
 export interface LoginResponse {
   token: string;
@@ -10,7 +13,9 @@ export interface LoginResponse {
 export class AuthService {
   private apiUrl = 'http://localhost:8080/api/auth';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private tokenSvc: TokenService,
+              private router: Router) {}
 
   login(username: string, password: string): Observable<LoginResponse> {
     // 1) hit /login
@@ -37,5 +42,12 @@ export class AuthService {
   }
   register(username: string, password: string, roles: string[]) {
     return this.http.post(`${this.apiUrl}/register`, { username, password, roles });
+  }
+  logout() {
+    // 1) clear the stored JWT
+    this.tokenSvc.clear();
+
+    // 2) navigate back to login
+    this.router.navigate(['/login']);
   }
 }

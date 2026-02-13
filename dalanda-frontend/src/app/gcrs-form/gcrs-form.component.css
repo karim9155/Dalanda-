@@ -1,0 +1,21 @@
+.gcrs-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.buttons {
+  margin-top: 20px;
+}
+
+button {
+  margin-right: 10px;
+}
+.back-button {
+  background-color: #000;   /* black background */
+  color: #fff;              /* white arrow icon */
+}

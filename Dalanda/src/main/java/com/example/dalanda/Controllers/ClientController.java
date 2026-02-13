@@ -37,10 +37,17 @@ public class ClientController {
     @PutMapping("/{id}")
     public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {
         return clientService.findById(id)
-                .map(existing -> {
-                    existing.setCompanyName(client.getCompanyName());
-                    existing.setOtherInfo(client.getOtherInfo());
-                    return ResponseEntity.ok(clientService.save(existing));
+                .map(existingClient -> {
+                    existingClient.setCompanyName(client.getCompanyName());
+                    existingClient.setContactName(client.getContactName());
+                    existingClient.setEmail(client.getEmail());
+                    existingClient.setPhoneNumber(client.getPhoneNumber());
+                    existingClient.setRib(client.getRib());
+                    existingClient.setFiscalMatricule(client.getFiscalMatricule());
+                    existingClient.setAddress(client.getAddress());
+                    existingClient.setCustomFields(client.getCustomFields());
+                    existingClient.setDisabledFields(client.getDisabledFields());
+                    return ResponseEntity.ok(clientService.save(existingClient));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
