@@ -56,6 +56,19 @@ Telegram (text / voice)
 - The OpenAI assistant is given tool definitions mapped to the Spring backend's REST endpoints (invoice CRUD, email sending), executed through n8n's HTTP Request nodes.
 - The assistant decides which tool to call based on the user's intent, executes it, and returns a natural-language response back through Telegram.
 
+## Running locally
+
+The backend reads its JWT signing key from the `JWT_SECRET` environment variable (a base64-encoded key of at least 32 bytes), so no secret lives in the repo.
+
+```bash
+cd Dalanda
+cp .env.example .env
+openssl rand -base64 32   # paste the output as JWT_SECRET in .env
+docker compose up
+```
+
+Running the Spring Boot app from your IDE works too: it picks up `Dalanda/.env` automatically. The Angular front-end is in `dalanda-frontend/` (`npm install`, then `npm start`).
+
 ## Status
 
 Deployed and actively used by the client (a company CEO) in production, handling real invoice creation and lookups on a weekly basis. Full project report and workflow documentation included in this repo.

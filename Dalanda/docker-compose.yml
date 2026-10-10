@@ -22,6 +22,7 @@ services:
       SPRING_DATASOURCE_URL:      jdbc:mysql://db:3306/dalandadb?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ""
+      JWT_SECRET:                 ${JWT_SECRET:?Set JWT_SECRET in Dalanda/.env (see .env.example)}
     ports:
       - "8080:8080"
     restart: on-failure

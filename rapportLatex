@@ -820,7 +820,7 @@ spring.jpa.show-sql=true
 # MySQL8 dialect
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 # JWT settings
-jwt.secret=k34P/y8j7RL9b/w/6syAsnY1o6KbiimA3kEj2+XItEc=
+jwt.secret=${JWT_SECRET}
 jwt.expirationMs=3600000
 \end{lstlisting}
 
