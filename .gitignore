@@ -2,3 +2,17 @@
 .env
 .env.*
 !.env.example
+
+# Dependencies and build output
+node_modules/
+target/
+dist/
+.angular/
+
+# IDE files
+.idea/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
